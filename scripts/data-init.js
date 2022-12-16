@@ -2,6 +2,7 @@ const Project = require('../models/Project')
 
 exports.createProjects = () => {
     const project1 = new Project({
+        category: 'dvur',
         type: 'donate',
         title: 'Zábavné učebny',
         urlTitle: 'zabavne-ucebny',
@@ -11,6 +12,7 @@ exports.createProjects = () => {
         maxMoney: 50_000
       })
       const project2 = new Project({
+        category: 'dvur',
         type: 'products',
         title: 'Dětské výrobky',
         urlTitle: 'detske-vyrobky',
@@ -20,6 +22,7 @@ exports.createProjects = () => {
         maxMoney: 50_000
       })
       const project3 = new Project({
+        category: 'dvur',
         type: 'donate-land',
         title: 'Kup si svoji část pozemku',
         urlTitle: 'kup-si-svoji-cast-pozemku',

@@ -1,5 +1,9 @@
-const express = require('express')
+const express = require('express');
 const mongoose = require('mongoose')
+const bodyParser = require('body-parser');
+
+// Routes
+const sharedRoutes = require('./routes/sharedRoutes')
 
 require('dotenv').config();
 
@@ -9,10 +13,23 @@ const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSW
 
 const app = express();
 
+// Cors
+app.use((req, res, next) => {
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE');
+	next();
+});
+
+app.use(bodyParser.json());
+
 app.use((req, res, next) => {
     console.log('Požadavek přijat')
     next();
 })
+
+// Adding routes to track
+app.use(sharedRoutes)
 
 mongoose.connect(MONGODB_URI, {useNewUrlParser: true}).then(() => {
     app.listen(5000)

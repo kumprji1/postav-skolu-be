@@ -3,6 +3,10 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 
 const projectSchema = new Schema({
+    category: {
+        type: String,
+        required: true
+    },
     type: {
         type: String,
         required: true
