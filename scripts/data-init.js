@@ -1,3 +1,4 @@
+const LandPiece = require('../models/LandPiece')
 const Project = require('../models/Project')
 
 exports.createProjects = () => {
@@ -34,4 +35,62 @@ exports.createProjects = () => {
       project1.save();
       project2.save();
       project3.save();
+}
+
+exports.createFewLandPiecesO3 = () => {
+  new LandPiece({
+    number: 1,
+    title: 'Oranžový trojúhelník',
+    price: 100,
+    photo: 'url',
+    type: 'O3',
+    usersText: '',
+    isAnonymous: false,
+    isBought: false,
+    area: 'O3_1'
+  }).save()
+  new LandPiece({
+    number: 2,
+    title: 'Oranžový trojúhelník',
+    price: 100,
+    photo: 'url',
+    type: 'O3',
+    usersText: '',
+    isAnonymous: false,
+    isBought: false,
+    area: 'O3_1'
+  }).save()
+  new LandPiece({
+    number: 3,
+    title: 'Oranžový trojúhelník',
+    price: 100,
+    photo: 'url',
+    type: 'O3',
+    usersText: '',
+    isAnonymous: false,
+    isBought: false,
+    area: 'O3_1'
+  }).save()
+  new LandPiece({
+    number: 4,
+    title: 'Oranžový trojúhelník',
+    price: 100,
+    photo: 'url',
+    type: 'O3',
+    usersText: '',
+    isAnonymous: false,
+    isBought: false,
+    area: 'O3_1'
+  }).save()
+  new LandPiece({
+    number: 5,
+    title: 'Oranžový trojúhelník',
+    price: 100,
+    photo: 'url',
+    type: 'O3',
+    usersText: '',
+    isAnonymous: false,
+    isBought: false,
+    area: 'O3_1'
+  }).save()
 }

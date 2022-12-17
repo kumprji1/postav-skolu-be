@@ -1,3 +1,4 @@
+const LandPiece = require('../models/LandPiece')
 const Project = require('../models/Project')
 
 exports.getProjectByCategory = (req, res, next) => {
@@ -8,4 +9,18 @@ exports.getProjectByCategory = (req, res, next) => {
         res.json(projects)
     })
     .catch(err => console.log(err))
+}
+
+/**
+ * Experimental ↓↓↓
+ */
+
+exports.getFewLandPiecesO3 = async (req, res, next) => {
+    try {
+        const landPieces = await LandPiece.find()
+        return res.json(landPieces)
+    } catch (err) { 
+        console.log(err)
+    }
+    
 }

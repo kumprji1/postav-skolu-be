@@ -7,7 +7,7 @@ const sharedRoutes = require('./routes/sharedRoutes')
 
 require('dotenv').config();
 
-const { createProjects } = require('./scripts/data-init')
+const { createProjects, createFewLandPiecesO3 } = require('./scripts/data-init')
 
 const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWD}@cluster0.orv11.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
@@ -34,5 +34,6 @@ app.use(sharedRoutes)
 mongoose.connect(MONGODB_URI, {useNewUrlParser: true}).then(() => {
     app.listen(5000)
     // createProjects()
+    // createFewLandPiecesO3()
 }).catch(err => console.log(err))
 
