@@ -39,6 +39,10 @@ const landPieceSchema = new Schema({
         type: String,
         required: true
     },
+    edges: {
+        type: Number,
+        required: true
+    }
 })
 
 module.exports = mongoose.model('LandPiece', landPieceSchema)

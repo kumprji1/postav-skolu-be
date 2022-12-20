@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 
 // Routes
 const sharedRoutes = require('./routes/sharedRoutes')
+const authRoutes = require('./routes/authRoutes')
 
 require('dotenv').config();
 
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
 })
 
 // Adding routes to track
+app.use('/api/auth', authRoutes)
 app.use(sharedRoutes)
 
 mongoose.connect(MONGODB_URI, {useNewUrlParser: true}).then(() => {

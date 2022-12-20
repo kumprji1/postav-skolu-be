@@ -47,7 +47,8 @@ exports.createFewLandPiecesO3 = () => {
     usersText: '',
     isAnonymous: false,
     isBought: false,
-    area: 'O3_1'
+    area: 'O3_1',
+    edges: 3
   }).save()
   new LandPiece({
     number: 2,
@@ -58,7 +59,8 @@ exports.createFewLandPiecesO3 = () => {
     usersText: '',
     isAnonymous: false,
     isBought: false,
-    area: 'O3_1'
+    area: 'O3_1',
+    edges: 3
   }).save()
   new LandPiece({
     number: 3,
@@ -69,7 +71,8 @@ exports.createFewLandPiecesO3 = () => {
     usersText: '',
     isAnonymous: false,
     isBought: false,
-    area: 'O3_1'
+    area: 'O3_1',
+    edges: 3
   }).save()
   new LandPiece({
     number: 4,
@@ -80,7 +83,8 @@ exports.createFewLandPiecesO3 = () => {
     usersText: '',
     isAnonymous: false,
     isBought: false,
-    area: 'O3_1'
+    area: 'O3_1',
+    edges: 3
   }).save()
   new LandPiece({
     number: 5,
@@ -91,6 +95,7 @@ exports.createFewLandPiecesO3 = () => {
     usersText: '',
     isAnonymous: false,
     isBought: false,
-    area: 'O3_1'
+    area: 'O3_1',
+    edges: 3
   }).save()
 }
