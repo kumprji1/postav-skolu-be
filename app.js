@@ -31,7 +31,7 @@ app.use((req, res, next) => {
 
 // Adding routes to track
 app.use('/api/auth', authRoutes)
-app.use(sharedRoutes)
+app.use('/api', sharedRoutes)
 
 mongoose.connect(MONGODB_URI, {useNewUrlParser: true}).then(() => {
     app.listen(5000)
