@@ -20,14 +20,14 @@ exports.postLogin = async (req, res, next) => {
   // Finding user
   let user = null;
   try {
-    user = await User.findOne({ username: req.body.username }).lean();
+    user = await User.findOne({ email: req.body.email }).lean();
   } catch (err) {
     return next(new HttpError("Nepodařilo se vyhledat v databázi", 500));
   }
 
   // Stops loggining process if no user found
   if (!user)
-    return next(new HttpError("Uživatel " + req.body.username +" neexistuje", 400));
+    return next(new HttpError("Uživatel " + req.body.email +" neexistuje", 400));
 
   // Comparing passwords
   let isPasswordCorrect = false;
@@ -44,7 +44,7 @@ exports.postLogin = async (req, res, next) => {
   user.token = jwt.sign(
     {
       userId: user._id,
-      username: user.username,
+      email: user.email,
       name: user.name,
       surname: user.surname,
       role: user.role,

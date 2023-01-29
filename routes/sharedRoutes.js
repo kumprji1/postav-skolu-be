@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.get('/get-projects-by-category/:category', sharedCtrl.getProjectByCategory)
 
+router.post('/create-order', sharedCtrl.postCreateOrder)
 /**
  * Experimental ↓↓↓
  */

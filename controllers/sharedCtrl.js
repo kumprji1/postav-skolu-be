@@ -5,12 +5,16 @@ const Project = require('../models/Project')
 
 exports.getProjectByCategory = (req, res, next) => {
     const { category } = req.params
-    console.log(category)
     Project.find({category: category})
     .then((projects) => {
         res.json(projects)
     })
     .catch(err => console.log(err))
+}
+
+exports.postCreateOrder = (req, res, next) => {
+    console.log(req.body)
+    res.json({message: 'ok'})
 }
 
 /**
@@ -29,12 +33,18 @@ exports.getFewLandPiecesO3 = async (req, res, next) => {
 exports.postBuyPieces = async (req, res, next) => {
     try {
         const piecesToBuy = req.body.landPiecesState.piecesToBuy
-        console.log(piecesToBuy)
 
         // const session = await mongoose.startSession();
         // session.startSession();
-        await LandPiece.updateOne({ number: piecesToBuy[0].number }, {$set: { isBought: true }})
+        for (const piece of piecesToBuy) {
+            // If it's already bought
+            await LandPiece.updateOne({ number: piece.number }, {$set: { isBought: true }})
+        }
         // await session.commitTransaction()
+        
+        /**
+         * Pro každý piece zjistit, jestli již náhodou nebyl koupený, poté platba, pak označit ke koupi
+         */
         res.json({message: 'OK'})
     } catch (err) {
         console.log(err)

@@ -1,7 +1,7 @@
 const { check } = require("express-validator");
 
 exports.postLogin = [
-  check("username").notEmpty().withMessage("Zadejte uživatelské jméno"),
+  check("email").notEmpty().withMessage("Zadejte email"),
   check('password').notEmpty().withMessage("Zadejte heslo")
 ];
 
