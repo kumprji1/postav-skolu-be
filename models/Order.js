@@ -3,37 +3,98 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 
 const orderSchema = new Schema({
-    category: {
-        type: String,
+    contact: {
+        name: {
+            type: String,
+            required: true
+        },
+        surname: {
+            type: String,
+            required: true
+        },
+        email: {
+            type: String,
+            required: true
+        },
+        mobile: {
+            type: String,
+            required: true
+        }
+    },
+    buyingAsCompany: {
+        type: Boolean,
         required: true
     },
-    type: {
-        type: String,
+    wantsCertificate: {
+        type: Boolean,
         required: true
     },
-    title: {
+    companyInfo: {
+        title: {
+            type: String,
+            required: true
+        },
+        ico: {
+            type: Number,
+            required: true
+        },
+        dic: {
+            type: String,
+            required: true
+        }
+    },
+    certificateInfo: {
+        street_num: {
+            type: String,
+            required: true
+        },
+        city: {
+            type: String,
+            required: true
+        },
+        zipCode: {
+            type: Number,
+            required: true
+        }
+    },
+    paymentMethod: {
         type: String,
         required: true,
     },
-    urlTitle: {
-        type: String,
-        required: true,
-    },
-    desc: {
+    deliveryMethod: {
         type: String,
         required: true
     },
-    photo: {
-        type: String,
-        required: true
-    },
-    earnedMoney: {
+    products: [{
+        type: Number,
+        required: false
+    }],
+    donations: [{
+        type: mongoose.Types.ObjectId,
+        ref: 'Donation',
+        required: false
+    }],
+    pieces: [{
+        type: mongoose.Types.ObjectId,
+        ref: 'LandPiece',
+        required: false
+
+    }],
+    totalAmount: {
         type: Number,
         required: true
     },
-    maxMoney: {
-        type: Number,
+    isPurchased: {
+        type: Boolean,
         required: true
+    },
+    createdAt: {
+        type: Date,
+        required: true
+    },
+    purchasedAt: {
+        type: Date,
+        required: false
     }
 })
 

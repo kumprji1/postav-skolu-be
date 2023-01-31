@@ -20,7 +20,7 @@ const landPieceSchema = new Schema({
         required: true,
     },
     //
-    type: {
+    town: {
         type: String,
         required: true,
     },
