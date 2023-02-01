@@ -26,7 +26,6 @@ exports.postCreateOrder = (req, res, next) => {
             surname: req.body.contact.surname,
             email: req.body.contact.email,
             mobile: req.body.contact.mobile,
-    
         },
         buyingAsCompany: req.body.buyingAsCompany,
         wantsCertificate: req.body.wantsCertificate,
