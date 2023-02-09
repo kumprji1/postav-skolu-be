@@ -1012,7 +1012,8 @@ exports.createProjects = () => {
         desc: 'Popis',
         photo: 'url_fotky',
         earnedMoney: 11_000,
-        maxMoney: 50_000
+        maxMoney: 50_000,
+        preparedPrices: [100, 200, 500]
       })
       const project2 = new Project({
         category: 'dvur',
@@ -1115,4 +1116,9 @@ exports.createFewLandPiecesO3 = () => {
       edges: p.edges
     }).save()
   }
+}
+
+exports.createPayment = () => {
+  console.log('Vytvořit platbu')
+  fetch()
 }

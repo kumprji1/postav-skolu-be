@@ -32,29 +32,29 @@ const orderSchema = new Schema({
     companyInfo: {
         title: {
             type: String,
-            required: true
+            required: false
         },
         ico: {
             type: Number,
-            required: true
+            required: false
         },
         dic: {
             type: String,
-            required: true
+            required: false
         }
     },
     certificateInfo: {
         street_num: {
             type: String,
-            required: true
+            required: false
         },
         city: {
             type: String,
-            required: true
+            required: false
         },
         zipCode: {
             type: Number,
-            required: true
+            required: false
         }
     },
     paymentMethod: {
@@ -63,7 +63,7 @@ const orderSchema = new Schema({
     },
     deliveryMethod: {
         type: String,
-        required: true
+        required: false
     },
     products: [{
         type: Number,

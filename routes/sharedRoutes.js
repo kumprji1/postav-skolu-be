@@ -5,6 +5,7 @@ const sharedCtrl = require('../controllers/sharedCtrl')
 const router = express.Router();
 
 router.get('/get-projects-by-category/:category', sharedCtrl.getProjectByCategory)
+router.get('/project/:urlTitle', sharedCtrl.getProject)
 
 router.post('/create-order', sharedCtrl.postCreateOrder)
 /**

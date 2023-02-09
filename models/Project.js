@@ -34,7 +34,16 @@ const projectSchema = new Schema({
     maxMoney: {
         type: Number,
         required: true
-    }
+    },
+    preparedPrices: [{
+        type: Number,
+        required: false
+    }],
+    products: [{
+        type: mongoose.Types.ObjectId,
+        ref: 'Product',
+        required: false
+    }]
 })
 
 module.exports = mongoose.model('Project', projectSchema)

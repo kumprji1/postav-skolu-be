@@ -8,7 +8,7 @@ const authRoutes = require('./routes/authRoutes')
 
 require('dotenv').config();
 
-const { createProjects, createFewLandPiecesO3 } = require('./scripts/data-init')
+const { createProjects, createFewLandPiecesO3, createPayment } = require('./scripts/data-init')
 
 const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWD}@cluster0.orv11.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
@@ -37,5 +37,6 @@ mongoose.connect(MONGODB_URI, {useNewUrlParser: true}).then(() => {
     app.listen(5000)
     // createProjects()
     // createFewLandPiecesO3()
+    createPayment()
 }).catch(err => console.log(err))
 
