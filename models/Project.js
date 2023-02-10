@@ -3,10 +3,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema
 
 const projectSchema = new Schema({
-    category: {
-        type: String,
-        required: true
-    },
     type: {
         type: String,
         required: true
@@ -26,24 +22,7 @@ const projectSchema = new Schema({
     photo: {
         type: String,
         required: true
-    },
-    earnedMoney: {
-        type: Number,
-        required: true
-    },
-    maxMoney: {
-        type: Number,
-        required: true
-    },
-    preparedPrices: [{
-        type: Number,
-        required: false
-    }],
-    products: [{
-        type: mongoose.Types.ObjectId,
-        ref: 'Product',
-        required: false
-    }]
+    }
 })
 
 module.exports = mongoose.model('Project', projectSchema)

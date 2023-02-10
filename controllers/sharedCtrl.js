@@ -1,10 +1,15 @@
 const mongoose = require("mongoose");
+const Donatable = require("../models/Donatable");
 const Donation = require("../models/Donation");
 
 const LandPiece = require("../models/LandPiece");
 const Order = require("../models/Order");
 const Project = require("../models/Project");
 
+
+/**
+ * Project
+ */
 exports.getProjectByCategory = (req, res, next) => {
   const { category } = req.params;
   Project.find({ category: category })
@@ -23,6 +28,25 @@ exports.getProject = (req, res, next) => {
     .catch((err) => console.log(err));
 };
 
+
+/**
+ * Donatable
+ */
+
+exports.getDonatablesByProjectId = async (req, res, next) => {
+  const projectId = req.params.projectId
+  let donatables = []
+  try {
+    donatables = await Donatable.find({ projectId: projectId})
+  } catch (err) {
+    console.log(err);
+  }
+  res.json(donatables)
+}
+
+/**
+ * Order
+ */
 exports.postCreateOrder = async (req, res, next) => {
   const totalAmount =
     req.body.donations.reduce((partSum, i) => partSum + i.price, 0) +
@@ -73,7 +97,6 @@ exports.postCreateOrder = async (req, res, next) => {
     createdAt: new Date(),
   });
   await newOrder.save();
-
   
   // lets PAYYY
 
