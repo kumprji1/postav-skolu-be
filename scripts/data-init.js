@@ -2,7 +2,8 @@ const axios = require("axios");
 
 const LandPiece = require("../models/LandPiece");
 const Project = require("../models/Project");
-const Donatable = require('../models/Donatable')
+const Donatable = require('../models/Donatable');
+const Donation = require("../models/Donation");
 
 const o3_1000_rows = [
   {
@@ -12075,42 +12076,87 @@ exports.createProjects = () => {
 exports.createDonatables = () => {
 
   new Donatable({
-    title: 'Žlutá třída',
+    title: 'Část pozemku',
     desc: 'Nějaký krátký popis o třech větách. Nějaký krátký popis o třech větách. Nějaký krátký popis o třech větách.',
-    photo: 'url',
+    photo: '/imgs/projects/3ac.jpg',
     earnedMoney: 0,
-    demandedMoney: 300_000,
+    demandedMoney: 4_900_000,
     preparedPrices: [100, 200, 500, 1_000],
-    projectId: '63e6139d098f02d5b37d770a'
+    projectId: '63e6139d098f02d5b37d770c'
   }).save()
-  new Donatable({
-    title: 'Metolová třída',
-    desc: 'Nějaký krátký popis o třech větách. Nějaký krátký popis o třech větách. Nějaký krátký popis o třech větách.',
-    photo: 'url',
-    earnedMoney: 10_000,
-    demandedMoney: 300_000,
-    preparedPrices: [100, 200, 500, 1_000],
-    projectId: '63e6139d098f02d5b37d770a'
-  }).save()
+  // new Donatable({
+  //   title: 'Žlutá třída',
+  //   desc: 'Nějaký krátký popis o třech větách. Nějaký krátký popis o třech větách. Nějaký krátký popis o třech větách.',
+  //   photo: 'url',
+  //   earnedMoney: 0,
+  //   demandedMoney: 300_000,
+  //   preparedPrices: [100, 200, 500, 1_000],
+  //   projectId: '63e6139d098f02d5b37d770a'
+  // }).save()
+  // new Donatable({
+  //   title: 'Metolová třída',
+  //   desc: 'Nějaký krátký popis o třech větách. Nějaký krátký popis o třech větách. Nějaký krátký popis o třech větách.',
+  //   photo: 'url',
+  //   earnedMoney: 10_000,
+  //   demandedMoney: 300_000,
+  //   preparedPrices: [100, 200, 500, 1_000],
+  //   projectId: '63e6139d098f02d5b37d770a'
+  // }).save()
 
-  new Donatable({
-    title: 'Jahodová třída',
-    desc: 'Nějaký krátký popis o třech větách. Nějaký krátký popis o třech větách. Nějaký krátký popis o třech větách.',
-    photo: 'url',
-    earnedMoney: 100_000,
-    demandedMoney: 300_000,
-    preparedPrices: [100, 200, 500, 1_000],
-    projectId: '63e6139d098f02d5b37d770a'
-  }).save()
+  // new Donatable({
+  //   title: 'Jahodová třída',
+  //   desc: 'Nějaký krátký popis o třech větách. Nějaký krátký popis o třech větách. Nějaký krátký popis o třech větách.',
+  //   photo: 'url',
+  //   earnedMoney: 100_000,
+  //   demandedMoney: 300_000,
+  //   preparedPrices: [100, 200, 500, 1_000],
+  //   projectId: '63e6139d098f02d5b37d770a'
+  // }).save()
 
-  new Donatable({
-    title: 'Tykrysová třída',
-    desc: 'Nějaký krátký popis o třech větách. Nějaký krátký popis o třech větách. Nějaký krátký popis o třech větách.',
-    photo: 'url',
-    earnedMoney: 280_000,
-    demandedMoney: 300_000,
-    preparedPrices: [100, 200, 500, 1_000],
-    projectId: '63e6139d098f02d5b37d770a'
+  // new Donatable({
+  //   title: 'Tykrysová třída',
+  //   desc: 'Nějaký krátký popis o třech větách. Nějaký krátký popis o třech větách. Nějaký krátký popis o třech větách.',
+  //   photo: 'url',
+  //   earnedMoney: 280_000,
+  //   demandedMoney: 300_000,
+  //   preparedPrices: [100, 200, 500, 1_000],
+  //   projectId: '63e6139d098f02d5b37d770a'
+  // }).save()
+
+}
+
+exports.createDonationsLandPieces = () => {
+  new Donation({
+    price: 100,
+    donatableId: '63ee1999742b27920b98e55b',
+    createdAt: new Date(),
+    purchasedAt: new Date(),
+    isPurchased: true,
+    isAnonymous: false
+  }).save()
+  new Donation({
+    price: 300,
+    donatableId: '63ee1999742b27920b98e55b',
+    createdAt: new Date(),
+    purchasedAt: new Date(),
+    isPurchased: true,
+    isAnonymous: false
+  }).save()
+  new Donation({
+    price: 200,
+    donatableId: '63ee1999742b27920b98e55b',
+    createdAt: new Date(),
+    purchasedAt: new Date(),
+    isPurchased: true,
+    isAnonymous: false
+  }).save()
+  new Donation({
+    price: 500,
+    donatableId: '63ee1999742b27920b98e55b',
+    createdAt: new Date(),
+    purchasedAt: new Date(),
+    isPurchased: true,
+    isAnonymous: false
   }).save()
 
 }

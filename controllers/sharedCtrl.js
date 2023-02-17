@@ -45,28 +45,51 @@ exports.getDonatablesByProjectId = async (req, res, next) => {
 }
 
 /**
+ * Donations
+ */
+
+exports.getDonationsByDonatableId = async (req, res, next) => {
+  let donations = []
+  try {
+    donations = await Donation.find({ donatableId: req.params.donatableId })
+  } catch (err) {
+    console.log(err)
+  }
+  res.json(donations)
+}
+
+/**
  * Order
  */
 exports.postCreateOrder = async (req, res, next) => {
-  const totalAmount =
+  const totalAmount = 
     req.body.donations.reduce((partSum, i) => partSum + i.price, 0) +
-    req.body.products.reduce((partSum, i) => partSum + i.price, 0) +
-    req.body.pieces.reduce((partSum, i) => partSum + i.price, 0);
-    console.log(totalAmount)
-  // console.log(req.body)
+    req.body.products.reduce((partSum, i) => partSum + i.price, 0) 
+
   // const orderData
-  res.json({ message: "ok" });
   // console.log(pieces);
-  const piecesIDs = req.body.pieces.map((p) => p.id);
   const donationsIDs = [];
 
   // Create Donations in DB
   for (const donation of req.body.donations) {
+
+    let donName = ''
+    if (donation.isAnonymous) {
+      donName = 'Anonym'
+    } else if (req.body.buyingAsCompany) {
+      donName = req.body.companyInfo.title
+    } else {
+      donName = req.body.contact.name + ' ' + req.body.contact.surname
+    }
+
     const newDonation = await new Donation({
       price: donation.price,
-      projectId: donation.projectId,
+      donatableId: donation.donatableId,
       createdAt: new Date(),
-      isPurchased: false,
+      isPurchased: true,
+      isAnonymous: donation.isAnonymous,
+      note: donation.note,
+      name: donName
     }).save();
     donationsIDs.push(newDonation._id);
   }
@@ -91,13 +114,13 @@ exports.postCreateOrder = async (req, res, next) => {
     deliveryMethod: req.body.deliveryMethod,
     products: [],
     donations: donationsIDs,
-    pieces: piecesIDs,
     totalAmount: totalAmount,
     isPurchased: false,
     createdAt: new Date(),
   });
   await newOrder.save();
   
+  res.json({message: 'Order created! ', orderId: newOrder._id})
   // lets PAYYY
 
 };

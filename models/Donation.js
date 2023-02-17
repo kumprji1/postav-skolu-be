@@ -7,9 +7,9 @@ const donationSchema = new Schema({
         type: Number,
         required: true
     },
-    projectId: {
+    donatableId: {
         type: mongoose.Types.ObjectId,
-        ref: 'Project',
+        ref: 'Donatable',
         required: true
     },
     createdAt: {
@@ -23,7 +23,25 @@ const donationSchema = new Schema({
     isPurchased: {
         type: Boolean,
         required: true
-    }
+    },
+    isAnonymous: {
+        type: Boolean,
+        required: true
+    },
+    orderId: {
+        type: mongoose.Types.ObjectId,
+        ref: 'Order',
+        required: false
+    },
+    name: {
+        type: String,
+        required: false
+    },
+    // For LandPieces (voluntary)
+    note: {
+        type: String,
+        required: false
+    },
 })
 
 module.exports = mongoose.model('Donation', donationSchema)

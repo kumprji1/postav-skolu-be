@@ -11,6 +11,9 @@ router.get('/project/:urlTitle', sharedCtrl.getProject)
 // Donatables
 router.get('/donatables/:projectId', sharedCtrl.getDonatablesByProjectId)
 
+// Donations 
+router.get('/donations/:donatableId', sharedCtrl.getDonationsByDonatableId)
+
 // Orders
 router.post('/create-order', sharedCtrl.postCreateOrder)
 
