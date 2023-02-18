@@ -35,6 +35,10 @@ const donatableSchema = new Schema({
         type: mongoose.Types.ObjectId,
         ref: 'Project',
         required: true
+    },
+    deleted: {
+        type: Boolean,
+        required: false
     }
 })
 

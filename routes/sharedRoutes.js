@@ -5,8 +5,9 @@ const sharedCtrl = require('../controllers/sharedCtrl')
 const router = express.Router();
 
 // Projects
+router.get('/projects/:projectId', sharedCtrl.getProject)
 router.get('/get-projects-by-category/:category', sharedCtrl.getProjectByCategory)
-router.get('/project/:urlTitle', sharedCtrl.getProject)
+router.get('/projects-by-title/:urlTitle', sharedCtrl.getProjectByTitle)
 
 // Donatables
 router.get('/donatables/:projectId', sharedCtrl.getDonatablesByProjectId)

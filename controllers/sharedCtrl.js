@@ -10,6 +10,16 @@ const Project = require("../models/Project");
 /**
  * Project
  */
+exports.getProject = async (req, res, next) => {
+  const { projectId } = req.params;
+  Project.findById(projectId)
+    .then((project) => {
+      res.json(project);
+    })
+    .catch((err) => console.log(err));
+
+}
+
 exports.getProjectByCategory = (req, res, next) => {
   const { category } = req.params;
   Project.find({ category: category })
@@ -19,7 +29,7 @@ exports.getProjectByCategory = (req, res, next) => {
     .catch((err) => console.log(err));
 };
 
-exports.getProject = (req, res, next) => {
+exports.getProjectByTitle = (req, res, next) => {
   const { urlTitle } = req.params;
   Project.findOne({ urlTitle: urlTitle })
     .then((project) => {

@@ -22,6 +22,10 @@ const projectSchema = new Schema({
     photo: {
         type: String,
         required: true
+    },
+    deleted: {
+        type: Boolean,
+        required: false
     }
 })
 
