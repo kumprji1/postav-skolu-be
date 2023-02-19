@@ -5,6 +5,7 @@ const Donation = require("../models/Donation");
 const LandPiece = require("../models/LandPiece");
 const Order = require("../models/Order");
 const Project = require("../models/Project");
+const HttpError = require('../models/HttpError')
 
 
 /**
@@ -33,9 +34,14 @@ exports.getProjectByTitle = (req, res, next) => {
   const { urlTitle } = req.params;
   Project.findOne({ urlTitle: urlTitle })
     .then((project) => {
-      res.json(project);
+      if (project) 
+        res.json(project);
+      else
+      return next(new HttpError('Nepodařilo se načíst projekt (nejspíše špatný url)', 500))
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      return next(new HttpError('Nepodařilo se načíst projekt', 500))
+    });
 };
 
 

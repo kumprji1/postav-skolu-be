@@ -7,7 +7,9 @@ const bodyParser = require('body-parser');
 // Routes
 const sharedRoutes = require('./routes/sharedRoutes')
 const authRoutes = require('./routes/authRoutes')
+const adminRoutes = require('./routes/adminRoutes')
 
+// Enabling .env variables
 require('dotenv').config();
 
 const { createProjects, createFewLandPiecesO3, createPayment, createDonatables } = require('./scripts/data-init')
@@ -27,6 +29,7 @@ app.use((req, res, next) => {
 // Enable static serving from public folder
 app.use(express.static(path.join('public')))
 
+// Enabling access to body of requests
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
@@ -36,8 +39,21 @@ app.use((req, res, next) => {
 
 // Adding routes to track
 app.use('/api/auth', authRoutes)
+app.use('/api/admin', adminRoutes)
 app.use('/api', sharedRoutes)
 
+// Handeling errors
+app.use((error, req, res, next) => {
+	console.log(error);
+	if (res.headerSent) {
+		return next(error);
+	}
+	res.status(error.code || 500);
+	res.json({ msg: error.message || 'Nastala neznámá chyba' });
+});
+
+
+// Database conn
 mongoose.connect(MONGODB_URI, {useNewUrlParser: true}).then(() => {
     app.listen(5000)
     // createProjects()

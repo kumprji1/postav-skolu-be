@@ -9,9 +9,9 @@ module.exports = (req, res, next) => {
   try {
     const token = req.headers.authorization.split(' ')[1]; // Authorization: 'Bearer TOKEN'
     if (!token) {
-      throw new Error('Authentication failed!');
+      throw new Error('Nemáte oprávnění!');
     }
-    const decodedToken = jwt.verify(token, 'harry_potter_secret_chamber');
+    const decodedToken = jwt.verify(token, 'postav_skolu_2023_secret');
     req.user = {
         userId: decodedToken.userId,
         email: decodedToken.email,
@@ -21,7 +21,7 @@ module.exports = (req, res, next) => {
       };
     next();
   } catch (err) {
-    const error = new HttpError('Authentication failed!', 403);
+    const error = new HttpError('Nemáte oprávnění!', 403);
     return next(error);
   }
 };

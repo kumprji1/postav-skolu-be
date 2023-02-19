@@ -1,11 +1,10 @@
 const { check } = require("express-validator");
 
-exports.postRegisterPupil = [
-  check("username").notEmpty().withMessage("Zadejte uživatelské jméno"),
-  check("name").notEmpty().withMessage("Zadejte jméno"),
-  check("surname").notEmpty().withMessage("Zadejte příjmení"),
-  check("password").notEmpty().withMessage("Zadejte heslo"),
-  check("rePassword").notEmpty().withMessage("Zadejte heslo pro kontrolu"),
+exports.createOrEditProject = [
+  check("title").notEmpty().withMessage("Zadejte název projektu"),
+  check("desc").notEmpty().withMessage("Zadejte popis projektu"),
+  check("urlTitle").notEmpty().withMessage("Zadejte URL název projektu"),
+  check("photo").notEmpty().withMessage("Zadejte URL obrázku"),
 ];
 
 exports.addOrEditProduct = [

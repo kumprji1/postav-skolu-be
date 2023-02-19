@@ -49,7 +49,7 @@ exports.postLogin = async (req, res, next) => {
       surname: user.surname,
       role: user.role,
     },
-    "harry_potter_secret_chamber"
+    "postav_skolu_2023_secret"
   );
 
   // Removing password before sending to client
