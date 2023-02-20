@@ -13,9 +13,11 @@ const router = express.Router();
 router.use(readToken, isAdmin)
 
 // Projects
+router.post('/create-project', adminVlds.createOrEditProject, adminCtrl.postCreateProject)
 router.patch('/edit-project/:projectId', adminVlds.createOrEditProject, adminCtrl.patchEditProject)
 
 // Donatables
+router.post('/create-donatable/:projectId', adminCtrl.postCreateDonatable)
 
 // Donations 
 
