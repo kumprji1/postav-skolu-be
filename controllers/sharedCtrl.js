@@ -151,7 +151,6 @@ exports.postCreateOrder = async (req, res, next) => {
       },
     ],
     mode: 'payment',
-    orderId: newOrder._id,
     success_url: `${process.env.FRONTEND_URL}/objednavka/${newOrder._id}?success=true`,
     cancel_url: `${process.env.FRONTEND_URL}/objednavka/${newOrder._id}?canceled=true`,
   });

@@ -8,17 +8,18 @@ const bodyParser = require('body-parser');
 const sharedRoutes = require('./routes/sharedRoutes')
 const authRoutes = require('./routes/authRoutes')
 const adminRoutes = require('./routes/adminRoutes')
-const stripeRoutes = require('./routes/stripeRoutes')
 
 // Stripe stuff
 const stripe = require('stripe')(process.env.STRIPE_KEY)
 const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
 
+const Order = require('./models/Order');
+
 
 // Enabling .env variables
 require('dotenv').config();
 
-const { createProjects, createFewLandPiecesO3, createPayment, createDonatables } = require('./scripts/data-init')
+const { createProjects, createFewLandPiecesO3, createPayment, createDonatables } = require('./scripts/data-init');
 
 const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWD}@cluster0.orv11.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
@@ -55,12 +56,12 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (request,
   if (event.type === 'checkout.session.completed') {
     console.log('checkout.session.completed')
     // Retrieve the session. If you require line items in the response, you may include them by expanding line_items.
-    const session = await stripe.checkout.sessions.retrieve(
-      session.id
-    );
+    const session = event.data.object;
 
     // Fulfill the purchase...
-    console.log('Fulfill', session)
+	const orderId = session.success_url.split('/')[4].split('?')[0].trim()
+	console.log('set this order as purchased: ', orderId)
+    await Order.findOneAndUpdate({_id: orderId}, {isPurchased: true})
   }
   
     response.status(200).end();
