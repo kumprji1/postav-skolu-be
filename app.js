@@ -8,6 +8,12 @@ const bodyParser = require('body-parser');
 const sharedRoutes = require('./routes/sharedRoutes')
 const authRoutes = require('./routes/authRoutes')
 const adminRoutes = require('./routes/adminRoutes')
+const stripeRoutes = require('./routes/stripeRoutes')
+
+// Stripe stuff
+const stripe = require('stripe')(process.env.STRIPE_KEY)
+const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
+
 
 // Enabling .env variables
 require('dotenv').config();
@@ -29,8 +35,46 @@ app.use((req, res, next) => {
 // Enable static serving from public folder
 app.use(express.static(path.join('public')))
 
+// Stripe Listener
+app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (request, response) => {
+    console.log('Objednávka zaplacena')
+
+    const payload = request.body;
+    const sig = request.headers['stripe-signature'];
+  
+    let event;
+  
+    try {
+      event = stripe.webhooks.constructEvent(payload, sig, endpointSecret);
+    } catch (err) {
+        console.log(`Webhook Error: ${err.message}`)
+      return response.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // Handle the checkout.session.completed event
+  if (event.type === 'checkout.session.completed') {
+    console.log('checkout.session.completed')
+    // Retrieve the session. If you require line items in the response, you may include them by expanding line_items.
+    const session = await stripe.checkout.sessions.retrieve(
+      session.id
+    );
+
+    // Fulfill the purchase...
+    console.log('Fulfill', session)
+  }
+  
+    response.status(200).end();
+  });
+
+
 // Enabling access to body of requests
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
+app.use(express.json({
+    limit: '5mb',
+    verify: (req, res, buf) => {
+      req.rawBody = buf.toString();
+    }
+}));
 
 app.use((req, res, next) => {
     console.log('Požadavek přijat')
@@ -38,6 +82,7 @@ app.use((req, res, next) => {
 })
 
 // Adding routes to track
+// app.use('/webhook', stripeRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api', sharedRoutes)

@@ -6,7 +6,8 @@ const LandPiece = require("../models/LandPiece");
 const Order = require("../models/Order");
 const Project = require("../models/Project");
 const HttpError = require('../models/HttpError')
-
+require('dotenv').config();
+const stripe = require('stripe')(process.env.STRIPE_KEY)
 
 /**
  * Project
@@ -135,8 +136,33 @@ exports.postCreateOrder = async (req, res, next) => {
     createdAt: new Date(),
   });
   await newOrder.save();
+
+  // Stripe
+  const session = await stripe.checkout.sessions.create({
+    line_items: [
+      {
+        price_data: {
+          currency: 'czk',
+          product_data: {name: 'Darovat'},
+          unit_amount: totalAmount * 100,
+          tax_behavior: 'exclusive',
+        },
+        quantity: 1,
+      },
+    ],
+    mode: 'payment',
+    orderId: newOrder._id,
+    success_url: `${process.env.FRONTEND_URL}/objednavka/${newOrder._id}?success=true`,
+    cancel_url: `${process.env.FRONTEND_URL}/objednavka/${newOrder._id}?canceled=true`,
+  });
+
+  // set order purchased
+  // Order.findByIdAndUpdate(newOrder._id, { isPurchased: true })
+
+
+  res.json({ sessionUrl: session.url, message: 'Order created! ', orderId: newOrder._id })
   
-  res.json({message: 'Order created! ', orderId: newOrder._id})
+  // res.json({message: 'Order created! ', orderId: newOrder._id})
   // lets PAYYY
 
 };
