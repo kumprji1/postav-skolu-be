@@ -68,7 +68,7 @@ exports.getDonatablesByProjectId = async (req, res, next) => {
 exports.getDonationsByDonatableId = async (req, res, next) => {
   let donations = []
   try {
-    donations = await Donation.find({ donatableId: req.params.donatableId })
+    donations = await Donation.find({ donatableId: req.params.donatableId, isPurchased: true })
   } catch (err) {
     console.log(err)
   }
@@ -103,7 +103,7 @@ exports.postCreateOrder = async (req, res, next) => {
       price: donation.price,
       donatableId: donation.donatableId,
       createdAt: new Date(),
-      isPurchased: true,
+      isPurchased: false,
       isAnonymous: donation.isAnonymous,
       note: donation.note,
       name: donName

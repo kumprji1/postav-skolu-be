@@ -20,6 +20,7 @@ const Order = require('./models/Order');
 require('dotenv').config();
 
 const { createProjects, createFewLandPiecesO3, createPayment, createDonatables } = require('./scripts/data-init');
+const Donation = require('./models/Donation');
 
 const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWD}@cluster0.orv11.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
@@ -60,10 +61,18 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (request,
 
     // Fulfill the purchase...
 	const orderId = session.success_url.split('/')[4].split('?')[0].trim()
-	console.log('set this order as purchased: ', orderId)
-    await Order.findOneAndUpdate({_id: orderId}, {isPurchased: true})
+	console.log('set this order and its donations as purchased: ', orderId)
+
+    const order = await Order.findOneAndUpdate({_id: orderId}, {isPurchased: true})
+    for (const donationId of order.donations) {
+      // If it's already bought
+      await Donation.updateOne(
+        { _id: donationId },
+        { $set: { isPurchased: true } }
+      );
+    }
+
   }
-  
     response.status(200).end();
   });
 
