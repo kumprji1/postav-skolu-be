@@ -7,10 +7,10 @@ const User = require("../models/User");
 const HttpError = require("../models/HttpError");
 
 // Utils
-const { Role } = require("../utils/roles");
+const { Roles, AuthServices } = require("../utils/roles");
 
 exports.postLogin = async (req, res, next) => {
-  console.log('Přihlášení')
+  console.log("Přihlášení");
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -27,7 +27,9 @@ exports.postLogin = async (req, res, next) => {
 
   // Stops loggining process if no user found
   if (!user)
-    return next(new HttpError("Uživatel " + req.body.email +" neexistuje", 400));
+    return next(
+      new HttpError("Uživatel " + req.body.email + " neexistuje", 400)
+    );
 
   // Comparing passwords
   let isPasswordCorrect = false;
@@ -58,8 +60,80 @@ exports.postLogin = async (req, res, next) => {
   res.json(user);
 };
 
-exports.postRegisterAdmin = async (req, res, next) => {
+exports.postLoginUser_Google = async (req, res, next) => {
+  console.log(req.body);
 
+  // Finding Google user
+  let user = null;
+  try {
+    user = await User.findOne({
+      email: req.body.email,
+      belong: AuthServices.GOOGLE,
+    }).lean();
+  } catch (err) {
+    return next(new HttpError("Nepodařilo se vyhledat v databázi", 500));
+  }
+
+  // Register new google user if no user found
+  if (!user) {
+    const newGoogleUser = new User({
+      name: req.body.name,
+      surname: req.body.surname,
+      email: req.body.email,
+      password: "none",
+      role: Roles.USER,
+      belong: AuthServices.GOOGLE,
+    });
+
+    // Saving to the database
+    try {
+      await newGoogleUser.save();
+    } catch (err) {
+      return next(
+        new HttpError("Nepodařilo se zaregistrovat Google účet", 500)
+      );
+    }
+
+    user = {
+      name: req.body.name,
+      surname: req.body.surname,
+      email: req.body.email,
+      role: Roles.USER,
+      belong: AuthServices.GOOGLE
+    }
+    user.token = jwt.sign(
+      {
+        userId: user._id,
+        email: user.email,
+        name: user.name,
+        surname: user.surname,
+        role: user.role,
+      },
+      "postav_skolu_2023_secret"
+    );
+
+    return res.json(user);
+  }
+
+  // Generating token
+  user.token = jwt.sign(
+    {
+      userId: user._id,
+      email: user.email,
+      name: user.name,
+      surname: user.surname,
+      role: user.role,
+    },
+    "postav_skolu_2023_secret"
+  );
+
+  // Removing password before sending to client
+  user.password = null;
+
+  res.json(user);
+};
+
+exports.postRegisterAdmin = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(new HttpError(errors.errors[0].msg, 422));
@@ -74,7 +148,10 @@ exports.postRegisterAdmin = async (req, res, next) => {
   }
 
   // Only 1 admin is alowed
-  if (existAdmin) return next(new HttpError("Jeden admin vládne všem. Více adminů není povoleno", 401));
+  if (existAdmin)
+    return next(
+      new HttpError("Jeden admin vládne všem. Více adminů není povoleno", 401)
+    );
 
   // Comparing passwords
   if (req.body.password !== req.body.rePassword)
@@ -94,7 +171,8 @@ exports.postRegisterAdmin = async (req, res, next) => {
     surname: req.body.surname,
     username: req.body.username,
     password: hashedPassword,
-    role: Role.ADMIN,
+    role: Roles.ADMIN,
+    belong: AuthServices.LOCAL,
   });
 
   // Saving to the database
@@ -108,9 +186,8 @@ exports.postRegisterAdmin = async (req, res, next) => {
 };
 
 exports.postRegisterUser = async (req, res, next) => {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) 
-  return next(new HttpError(errors.errors[0].msg, 500))
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return next(new HttpError(errors.errors[0].msg, 500));
 
   // Finding existing user with given username
   let userExists = false;
@@ -122,7 +199,9 @@ exports.postRegisterUser = async (req, res, next) => {
 
   // Username has to be unique
   if (userExists)
-    return next(new HttpError("Uživatel " + req.body.email + ' již existuje', 401));
+    return next(
+      new HttpError("Uživatel " + req.body.email + " již existuje", 401)
+    );
 
   // Comparing passwords
   if (req.body.password !== req.body.rePassword)
@@ -142,7 +221,8 @@ exports.postRegisterUser = async (req, res, next) => {
     name: req.body.name,
     surname: req.body.surname,
     password: hashedPassword,
-    role: Role.USER
+    role: Roles.USER,
+    belong: AuthServices.LOCAL,
   });
 
   // Saving to the database

@@ -32,7 +32,12 @@ const userSchema = new Schema({
         type: mongoose.Types.ObjectId,
         ref: 'Product',
         required: false
-    }]
+    }],
+    // Accepted values 'LOCAL', 'GOOGLE', 'FACEBOOK'
+    belong: {
+        type: String,
+        required: true
+    }
 })
 
 module.exports = mongoose.model('User', userSchema)

@@ -12,3 +12,9 @@ exports.postRegisterUser = [
   check('password').notEmpty().withMessage("Zadejte heslo"),
   check('rePassword').notEmpty().withMessage("Zadejte heslo pro kontrolu")
 ]
+
+exports.postLoginUserGoogle = [
+  check("email").notEmpty().withMessage("Zadejte email"),
+  check("name").notEmpty().withMessage("Zadejte jméno"),
+  check("surname").notEmpty().withMessage("Zadejte příjmení"),
+]

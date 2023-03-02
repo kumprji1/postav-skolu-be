@@ -12,4 +12,6 @@ router.post(
   authCtrl.postRegisterUser
 );
 
+router.post("/login-google", authVldt.postLoginUserGoogle, authCtrl.postLoginUser_Google)
+
 module.exports = router;
