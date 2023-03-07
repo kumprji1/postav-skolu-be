@@ -74,14 +74,18 @@ const orderSchema = new Schema({
         ref: 'Donation',
         required: false
     }],
-    pieces: [{
-        type: mongoose.Types.ObjectId,
-        ref: 'LandPiece',
-        required: false
+    // pieces: [{
+    //     type: mongoose.Types.ObjectId,
+    //     ref: 'LandPiece',
+    //     required: false
 
-    }],
+    // }],
     totalAmount: {
         type: Number,
+        required: true
+    },
+    uuid: {
+        type: String,
         required: true
     },
     isPurchased: {

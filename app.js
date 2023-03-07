@@ -11,7 +11,10 @@ const adminRoutes = require('./routes/adminRoutes')
 
 // Stripe stuff
 const stripe = require('stripe')(process.env.STRIPE_KEY)
+// cd C:\Users\gorto\Downloads\stripe_1.13.12_windows_x86_64
+// stripe listen --forward-to localhost:5000/webhook
 const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
+
 
 const Order = require('./models/Order');
 
@@ -63,7 +66,7 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (request,
 	const orderId = session.success_url.split('/')[4].split('?')[0].trim()
 	console.log('set this order and its donations as purchased: ', orderId)
 
-    const order = await Order.findOneAndUpdate({_id: orderId}, {isPurchased: true})
+    const order = await Order.findOneAndUpdate({_id: orderId}, {isPurchased: true, purchasedAt: new Date()})
     for (const donationId of order.donations) {
       // If it's already bought
       await Donation.updateOne(

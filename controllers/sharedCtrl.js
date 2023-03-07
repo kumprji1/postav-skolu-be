@@ -1,3 +1,5 @@
+const { v4: uuidv4 } = require('uuid');
+
 const mongoose = require("mongoose");
 const Donatable = require("../models/Donatable");
 const Donation = require("../models/Donation");
@@ -111,6 +113,8 @@ exports.postCreateOrder = async (req, res, next) => {
     donationsIDs.push(newDonation._id);
   }
 
+  const uuid = uuidv4();
+
   // console.log(piecesIDs)
   const newOrder = new Order({
     contact: {
@@ -132,6 +136,7 @@ exports.postCreateOrder = async (req, res, next) => {
     products: [],
     donations: donationsIDs,
     totalAmount: totalAmount,
+    uuid: uuid,
     isPurchased: false,
     createdAt: new Date(),
   });
@@ -151,8 +156,8 @@ exports.postCreateOrder = async (req, res, next) => {
       },
     ],
     mode: 'payment',
-    success_url: `${process.env.FRONTEND_URL}/objednavka/${newOrder._id}?success=true`,
-    cancel_url: `${process.env.FRONTEND_URL}/objednavka/${newOrder._id}?canceled=true`,
+    success_url: `${process.env.FRONTEND_URL}/objednavka/${newOrder._id}?success=true&uuid=${uuid}`,
+    cancel_url: `${process.env.FRONTEND_URL}/objednavka/${newOrder._id}?canceled=true&uuid=${uuid}`,
   });
 
   // set order purchased
@@ -165,6 +170,24 @@ exports.postCreateOrder = async (req, res, next) => {
   // lets PAYYY
 
 };
+
+exports.getOrderByIdAndUUID = async (req, res, next) => {
+  const orderId = req.params.orderId
+  const orderUUID = req.query.uuid
+
+  let order;
+  try {
+    order = await Order.findOne({_id: orderId, uuid: orderUUID})
+  } catch (err) {
+    return next(new HttpError('Nepodařilo se načíst objednávku', 500))
+  }
+
+  // If no order found
+  if (!order)
+  return next(new HttpError('Nepodařilo se najít objednávku. Nejspíše nesprávna URL adresa.', 500))
+
+  res.json(order)
+}
 
 /**
  * Experimental ↓↓↓
