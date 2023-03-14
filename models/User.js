@@ -34,9 +34,13 @@ const userSchema = new Schema({
         required: false
     }],
     // Accepted values 'LOCAL', 'GOOGLE', 'FACEBOOK'
-    belong: {
-        type: String,
+    local: {
+        type: Boolean,
         required: true
+    },
+    google: {
+        type: Boolean,
+        required: false
     }
 })
 

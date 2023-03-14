@@ -189,7 +189,7 @@ exports.postRegisterUser = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return next(new HttpError(errors.errors[0].msg, 500));
 
-  // Finding existing user with given username
+  // Finding existing user with given email
   let userExists = false;
   try {
     userExists = await User.exists({ email: req.body.email });
