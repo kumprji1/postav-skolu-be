@@ -34,11 +34,15 @@ const userSchema = new Schema({
         required: false
     }],
     // Accepted values 'LOCAL', 'GOOGLE', 'FACEBOOK'
-    local: {
-        type: Boolean,
+    belong: {
+        type: String,
         required: true
     },
-    google: {
+    // google: {
+    //     type: Boolean,
+    //     required: false
+    // },
+    receiveNews: {
         type: Boolean,
         required: false
     }
