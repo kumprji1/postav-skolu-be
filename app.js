@@ -24,6 +24,9 @@ require('dotenv').config();
 
 const { createProjects, createFewLandPiecesO3, createPayment, createDonatables } = require('./scripts/data-init');
 const Donation = require('./models/Donation');
+const Donatable = require('./models/Donatable');
+const { testPDFCreation } = require('./pdf/pdf_testing');
+const { sendTestEmail } = require('./utils/mail_testing');
 
 const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWD}@cluster0.orv11.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
@@ -66,15 +69,34 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (request,
 	const orderId = session.success_url.split('/')[4].split('?')[0].trim()
 	console.log('set this order and its donations as purchased: ', orderId)
 
+  const sessionDB = await mongoose.startSession()
+  sessionDB.startTransaction()
+  try {
     const order = await Order.findOneAndUpdate({_id: orderId}, {isPurchased: true, purchasedAt: new Date()})
+    if (!order) {
+      await sessionDB.abortTransaction()
+      throw new Error('Transakce se nezdařila')
+    }
     for (const donationId of order.donations) {
       // If it's already bought
-      await Donation.updateOne(
+      const don = await Donation.findByIdAndUpdate(
         { _id: donationId },
         { $set: { isPurchased: true } }
       );
+      const donatable = await Donatable.updateOne({_id: don.donatableId}, { $inc: { earnedMoney: don.price } })
+      if (!don || ! donatable) {
+        await sessionDB.abortTransaction()
+        throw new Error('Transakce se nezdařila')
+      }
     }
-
+    await sessionDB.commitTransaction()
+  } catch (error) {
+    await sessionDB.abortTransaction()
+    console.log(error)
+  } finally {
+    sessionDB.endSession()
+  }
+  
   }
     response.status(200).end();
   });
@@ -118,5 +140,7 @@ mongoose.connect(MONGODB_URI, {useNewUrlParser: true}).then(() => {
     // createDonatables()
     // createFewLandPiecesO3()
     // createPayment()
+    // testPDFCreation()
+    sendTestEmail();
 }).catch(err => console.log(err))
 

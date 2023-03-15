@@ -24,9 +24,8 @@ exports.getProject = async (req, res, next) => {
 
 }
 
-exports.getProjectByCategory = (req, res, next) => {
-  const { category } = req.params;
-  Project.find({ category: category })
+exports.getProjects = (req, res, next) => {
+  Project.find()
     .then((projects) => {
       res.json(projects);
     })
@@ -57,6 +56,9 @@ exports.getDonatablesByProjectId = async (req, res, next) => {
   let donatables = []
   try {
     donatables = await Donatable.find({ projectId: projectId})
+    for (const donatable of donatables) {
+      
+    }
   } catch (err) {
     console.log(err);
   }

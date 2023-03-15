@@ -6,8 +6,9 @@ const router = express.Router();
 
 // Projects
 router.get('/projects/:projectId', sharedCtrl.getProject)
-router.get('/get-projects-by-category/:category', sharedCtrl.getProjectByCategory)
 router.get('/projects-by-title/:urlTitle', sharedCtrl.getProjectByTitle)
+router.get('/projects', sharedCtrl.getProjects)
+
 
 // Donatables
 router.get('/donatables/:projectId', sharedCtrl.getDonatablesByProjectId)
