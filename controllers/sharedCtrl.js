@@ -7,7 +7,9 @@ const Donation = require("../models/Donation");
 const LandPiece = require("../models/LandPiece");
 const Order = require("../models/Order");
 const Project = require("../models/Project");
-const HttpError = require('../models/HttpError')
+const HttpError = require('../models/HttpError');
+const { testPDFCreation } = require('../pdf/pdf_testing');
+const { sendEmail_OrderCreated } = require('../utils/mail_service');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_KEY)
 
@@ -84,8 +86,7 @@ exports.getDonationsByDonatableId = async (req, res, next) => {
  */
 exports.postCreateOrder = async (req, res, next) => {
   const totalAmount = 
-    req.body.donations.reduce((partSum, i) => partSum + i.price, 0) +
-    req.body.products.reduce((partSum, i) => partSum + i.price, 0) 
+    req.body.donations.reduce((partSum, i) => partSum + i.price, 0)
 
   // const orderData
   // console.log(pieces);
@@ -172,6 +173,25 @@ try {
 } catch (error) {
   return next(new HttpError('Nepodařilo se uložit URL stripu', 500))
 }
+
+// Generate Bill (generování faktury)
+let contact = {
+  name: req.body.buyingAsCompany ? req.body.companyInfo.title : req.body.contact.name + ' ' + req.body.contact.surname,
+  street_num: req.body.certificateInfo.street_num,
+  city: req.body.certificateInfo.city,
+  zipCode: req.body.certificateInfo.zipCode.toString(),
+  ico: req.body.companyInfo.ico.toString(),
+  date: "16.03.2023",
+  totalPrice: totalAmount.toString(),
+};
+
+let donations = req.body.donations.map(don => ({
+  title: don.title,
+  price: don.price.toString()
+}));
+
+testPDFCreation({...contact, donations}, newOrder._id.toString())
+sendEmail_OrderCreated(req.body.contact.email)
 
   res.json({ sessionUrl: session.url, message: 'Order created! ', orderId: newOrder._id })
 

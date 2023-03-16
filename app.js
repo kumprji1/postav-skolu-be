@@ -27,7 +27,7 @@ const { createProjects, createFewLandPiecesO3, createPayment, createDonatables }
 const Donation = require('./models/Donation');
 const Donatable = require('./models/Donatable');
 const { testPDFCreation } = require('./pdf/pdf_testing');
-const { sendTestEmail } = require('./utils/mail_testing');
+const { sendTestEmail, sendEmail_OrderPurchasedAndBill } = require('./utils/mail_service');
 
 const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWD}@cluster0.orv11.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
@@ -91,6 +91,7 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (request,
       }
     }
     await sessionDB.commitTransaction()
+    sendEmail_OrderPurchasedAndBill(order.contact.email, {orderId: order._id})
   } catch (error) {
     await sessionDB.abortTransaction()
     console.log(error)

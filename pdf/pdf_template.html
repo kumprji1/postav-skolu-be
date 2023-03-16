@@ -1,69 +1,77 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<meta charset="UTF-8">
-	<title>Faktura - Poskytnutí finančního daru</title>
-	<style>
-		table {
-			border-collapse: collapse;
-			width: 100%;
-			margin-bottom: 30px;
-		}
-		table td, table th {
-			border: 1px solid #ddd;
-			padding: 8px;
-			text-align: left;
-		}
-		table th {
-			background-color: #f2f2f2;
-		}
-		h1, h2 {
-			margin-top: 0;
-			margin-bottom: 20px;
-			text-align: center;
-		}
-	</style>
-</head>
-<body>
-	<h1>Faktura - Poskytnutí finančního daru</h1>
-	<table>
-		<tr>
-			<th>Název organizace / jméno dárce:</th>
-			<td>Jiří Kumprecht</td>
-		</tr>
-		<tr>
-			<th>Adresa organizace / dárce:</th>
-			<td>Bílá Třemešná 120, 54472</td>
-		</tr>
-		<tr>
-			<th>Identifikační číslo organizace / rodné číslo dárce:</th>
-			<td>986532/7856</td>
-		</tr>
-		<tr>
-			<th>Název příjemce daru:</th>
-			<td>Základní škola speciální a praktická škola Diakonie ČCE Vrchlabí</td>
-		</tr>
-		<tr>
-			<th>Adresa příjemce daru:</th>
-			<td>Komenského 616, Vrchlabí, 54301</td>
-		</tr>
-		<tr>
-			<th>Identifikační číslo příjemce daru:</th>
-			<td>71228323</td>
-		</tr>
-		<tr>
-			<th>Datum darování:</th>
-			<td>12.08.2022</td>
-		</tr>
-		<tr>
-			<th>Celková částka daru:</th>
-			<td>2 000 CZK</td>
-		</tr>
-		<tr>
-			<th>Popis daru:</th>
-			<td>Dar na koupi pozemku</td>
-		</tr>
-	</table>
-	<h2>Děkujeme za Vaši podporu!</h2>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Faktura - Poskytnutí finančního daru</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 30px;
+      }
+      table td,
+      table th {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      table th {
+        background-color: #f2f2f2;
+      }
+      h1,
+      h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Faktura - Poskytnutí finančního daru</h1>
+    <table>
+      <tr>
+        <th>Název organizace / jméno dárce:</th>
+        <td>{{name}}</td>
+      </tr>
+      <tr>
+        <th>Adresa organizace / dárce:</th>
+        <td>{{street_num}}, {{city}}, {{zipCode}}</td>
+      </tr>
+      <tr>
+        <th>Identifikační číslo organizace / rodné číslo dárce:</th>
+        <td>{{ico}}</td>
+      </tr>
+      <tr>
+        <th>Název příjemce daru:</th>
+        <td>
+          Základní škola speciální a praktická škola Diakonie ČCE Vrchlabí
+        </td>
+      </tr>
+      <tr>
+        <th>Adresa příjemce daru:</th>
+        <td>Komenského 616, Vrchlabí, 54301</td>
+      </tr>
+      <tr>
+        <th>Identifikační číslo příjemce daru:</th>
+        <td>71228323</td>
+      </tr>
+      <tr>
+        <th>Datum darování:</th>
+        <td>{{date}}</td>
+      </tr>
+      <tr>
+        <th>Celková částka daru:</th>
+        <td>{{totalPrice}} CZK</td>
+      </tr>
+    </table>
+    <h1>Darováno: </h1>
+    <ul>
+      {{#each donations}}
+      <li>Název daru: {{this.title}}</li>
+      <li>Cena: {{this.price}} CZK</li>
+      <br />
+      {{/each}}
+    </ul>
+    <h2>Děkujeme za Vaši podporu!</h2>
+  </body>
 </html>
