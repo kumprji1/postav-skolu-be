@@ -8,10 +8,11 @@ const bodyParser = require('body-parser');
 const sharedRoutes = require('./routes/sharedRoutes')
 const authRoutes = require('./routes/authRoutes')
 const adminRoutes = require('./routes/adminRoutes')
+const userRoutes = require('./routes/userRoutes')
 
 // Stripe stuff
 const stripe = require('stripe')(process.env.STRIPE_KEY)
-// cd C:\Users\gorto\Downloads\stripe_1.13.12_windows_x86_64
+// cd C:\Users\gorto\Downloads\stripe_1.13.12_windows_x86_64cd C:\Users\gorto\Downloads\stripe_1.13.12_windows_x86_64
 // stripe listen --forward-to localhost:5000/webhook
 const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
 
@@ -103,13 +104,13 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (request,
 
 
 // Enabling access to body of requests
-// app.use(bodyParser.json());
-app.use(express.json({
-    limit: '5mb',
-    verify: (req, res, buf) => {
-      req.rawBody = buf.toString();
-    }
-}));
+app.use(bodyParser.json());
+// app.use(express.json({
+//     limit: '5mb',
+//     verify: (req, res, buf) => {
+//       req.rawBody = buf.toString();
+//     }
+// }));
 
 app.use((req, res, next) => {
     console.log('Požadavek přijat')
@@ -120,6 +121,7 @@ app.use((req, res, next) => {
 // app.use('/webhook', stripeRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/admin', adminRoutes)
+app.use('/api/user', userRoutes)
 app.use('/api', sharedRoutes)
 
 // Handeling errors
@@ -141,6 +143,6 @@ mongoose.connect(MONGODB_URI, {useNewUrlParser: true}).then(() => {
     // createFewLandPiecesO3()
     // createPayment()
     // testPDFCreation()
-    sendTestEmail();
+    // sendTestEmail();
 }).catch(err => console.log(err))
 

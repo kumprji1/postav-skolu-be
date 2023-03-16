@@ -19,6 +19,11 @@ exports.sendTestEmail = () => {
     to: "gortozcze@gmail.com",
     subject: "Předmět emailu",
     text: "Text emailu",
+    attachments: [
+      {   // filename and content type is derived from path
+        path: './pdf/outputs/output.pdf'
+    },
+    ]
   };
 
   // Odeslání emailu

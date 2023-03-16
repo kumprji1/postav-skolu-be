@@ -23,25 +23,15 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    orderedProducts: [{
-        type: mongoose.Types.ObjectId,
-        ref: 'Product',
-        required: false
-    }],
-    deliveredProducts: [{
-        type: mongoose.Types.ObjectId,
-        ref: 'Product',
-        required: false
-    }],
     // Accepted values 'LOCAL', 'GOOGLE', 'FACEBOOK'
-    belong: {
-        type: String,
+    isLocallyCreated: {
+        type: Boolean,
         required: true
     },
-    // google: {
-    //     type: Boolean,
-    //     required: false
-    // },
+    isGoogleAssociated: {
+        type: Boolean,
+        required: false
+    },
     receiveNews: {
         type: Boolean,
         required: false

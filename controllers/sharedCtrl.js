@@ -117,7 +117,7 @@ exports.postCreateOrder = async (req, res, next) => {
 
   const uuid = uuidv4();
 
-  // console.log(piecesIDs)
+  console.log(req.body.companyInfo)
   const newOrder = new Order({
     contact: {
       name: req.body.contact.name,
@@ -127,12 +127,16 @@ exports.postCreateOrder = async (req, res, next) => {
     },
     buyingAsCompany: req.body.buyingAsCompany,
     wantsCertificate: req.body.wantsCertificate,
-    "companyInfo.title": req.body.companyInfo.title,
-    "companyInfo.ico": req.body.companyInfo.ico,
-    "companyInfo.dic": req.body.companyInfo.dic,
-    "certificateInfo.street_num": req.body.certificateInfo.street_num,
-    "certificateInfo.city": req.body.certificateInfo.city,
-    "certificateInfo.zipCode": req.body.certificateInfo.zipCode,
+    companyInfo: {
+      title: req.body.companyInfo.title,
+      ico: req.body.companyInfo.ico,
+      dic: req.body.companyInfo.dic  
+    },
+    certificateInfo: {
+      street_num: req.body.certificateInfo.street_num,
+      city: req.body.certificateInfo.city,
+      zipCode: req.body.certificateInfo.zipCode
+    },
     paymentMethod: req.body.paymentMethod,
     deliveryMethod: req.body.deliveryMethod,
     products: [],
@@ -162,11 +166,15 @@ exports.postCreateOrder = async (req, res, next) => {
     cancel_url: `${process.env.FRONTEND_URL}/objednavka/${newOrder._id}?canceled=true&uuid=${uuid}`,
   });
 
-  // set order purchased
-  // Order.findByIdAndUpdate(newOrder._id, { isPurchased: true })
-
+  
+try {
+  await newOrder.update({ stripeUrl: session.url })
+} catch (error) {
+  return next(new HttpError('Nepodařilo se uložit URL stripu', 500))
+}
 
   res.json({ sessionUrl: session.url, message: 'Order created! ', orderId: newOrder._id })
+
   
   // res.json({message: 'Order created! ', orderId: newOrder._id})
   // lets PAYYY
@@ -178,8 +186,19 @@ exports.getOrderByIdAndUUID = async (req, res, next) => {
   const orderUUID = req.query.uuid
 
   let order;
+  // let donations = []
+
   try {
-    order = await Order.findOne({_id: orderId, uuid: orderUUID})
+    order = await Order.findOne({_id: orderId, uuid: orderUUID}).populate({
+      path: 'donations',
+      populate: {
+        path: 'donatableId'
+      }
+    })
+    // for (const donation of order.donations) {
+    //   const don = await Donation.findOne({_id: donation}).populate('donatableId', 'title photo').lean()
+    //   donations.push(don)
+    // }
   } catch (err) {
     return next(new HttpError('Nepodařilo se načíst objednávku', 500))
   }
@@ -188,6 +207,7 @@ exports.getOrderByIdAndUUID = async (req, res, next) => {
   if (!order)
   return next(new HttpError('Nepodařilo se najít objednávku. Nejspíše nesprávna URL adresa.', 500))
 
+  // console.log(donations)
   res.json(order)
 }
 

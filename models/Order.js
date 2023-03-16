@@ -99,6 +99,10 @@ const orderSchema = new Schema({
     purchasedAt: {
         type: Date,
         required: false
+    },
+    stripeUrl: {
+        type: String,
+        required: false
     }
 })
 

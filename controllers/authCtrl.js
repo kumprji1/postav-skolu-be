@@ -31,6 +31,15 @@ exports.postLogin = async (req, res, next) => {
       new HttpError("Uživatel " + req.body.email + " neexistuje", 400)
     );
 
+  // Stops loggining process if user not created locally
+  if (user) {
+    if (!user.isLocallyCreated) {
+      return next(
+        new HttpError("Uživatel není registrovaný lokálně. Přihlaste se přes služby třetích stran (Google) nebo zaregistrujte tento email tlačítekm registrovat níže.", 400)
+      );  
+    }
+  }
+
   // Comparing passwords
   let isPasswordCorrect = false;
   try {
@@ -68,7 +77,6 @@ exports.postLoginUser_Google = async (req, res, next) => {
   try {
     user = await User.findOne({
       email: req.body.email,
-      belong: AuthServices.GOOGLE,
     }).lean();
   } catch (err) {
     return next(new HttpError("Nepodařilo se vyhledat v databázi", 500));
@@ -82,7 +90,8 @@ exports.postLoginUser_Google = async (req, res, next) => {
       email: req.body.email,
       password: "none",
       role: Roles.USER,
-      belong: AuthServices.GOOGLE,
+      isLocallyCreated: false,
+      isGoogleAssociated: true,
     });
 
     // Saving to the database
@@ -95,15 +104,14 @@ exports.postLoginUser_Google = async (req, res, next) => {
     }
 
     user = {
-      name: req.body.name,
-      surname: req.body.surname,
-      email: req.body.email,
-      role: Roles.USER,
-      belong: AuthServices.GOOGLE
-    }
+      name: newGoogleUser.name,
+      surname: newGoogleUser.surname,
+      email: newGoogleUser.email,
+      role: newGoogleUser.role,
+    };
     user.token = jwt.sign(
       {
-        userId: user._id,
+        userId: newGoogleUser._id,
         email: user.email,
         name: user.name,
         surname: user.surname,
@@ -113,6 +121,18 @@ exports.postLoginUser_Google = async (req, res, next) => {
     );
 
     return res.json(user);
+  }
+
+  // When user is found but not assocated with google, associate it
+  if (!user.isGoogleAssociated) {
+    try {
+      await User.findOneAndUpdate(
+        { email: user.email },
+        { isGoogleAssociated: true }
+      );
+    } catch (err) {
+      return next(new HttpError("Nepodařilo se asociovat google účet", 500));
+    }
   }
 
   // Generating token
@@ -192,16 +212,20 @@ exports.postRegisterUser = async (req, res, next) => {
   // Finding existing user with given email
   let userExists = false;
   try {
-    userExists = await User.exists({ email: req.body.email });
+    userExists = await User.findOne({ email: req.body.email }).lean();
   } catch (err) {
     return next(new HttpError("Cannot retrieve data from database", 500));
   }
+  console.log(userExists)
 
   // Username has to be unique
-  if (userExists)
-    return next(
-      new HttpError("Uživatel " + req.body.email + " již existuje", 401)
-    );
+  if (userExists) {
+    if (userExists.isLocallyCreated) {
+      return next(
+        new HttpError("Uživatel " + req.body.email + " již existuje", 401)
+      );
+    }
+  }
 
   // Comparing passwords
   if (req.body.password !== req.body.rePassword)
@@ -216,21 +240,47 @@ exports.postRegisterUser = async (req, res, next) => {
     return next(new HttpError("Password hasn't been hashed", 500));
   }
 
+  // If the user was created first by google login, only update some attributes
+  if (userExists) {
+    if (userExists.isGoogleAssociated) {
+      console.log('Uživatel před google tu je, pojdmě jen aktualizovat data')
+      // Saving to the database
+      try {
+        await User.findOneAndUpdate(
+          {
+            email: req.body.email,
+          },
+          {
+            name: req.body.name,
+            surname: req.body.surname,
+            password: hashedPassword,
+            isLocallyCreated: true,
+          }
+        );
+      } catch (err) {
+        return next(new HttpError("Nepodařilo se uložit uživatele", 500));
+      }
+      return res.json({ msg: "Nový uživatel mezi námi!" });
+    }
+  }
+
+  console.log('Uživatel před google tu je, tak toto by nemělo projít')
   const newUser = new User({
     email: req.body.email,
     name: req.body.name,
     surname: req.body.surname,
     password: hashedPassword,
     role: Roles.USER,
-    belong: AuthServices.LOCAL,
+    isLocallyCreated: true,
+    isGoogleAssociated: false,
   });
 
   // Saving to the database
   try {
     await newUser.save();
   } catch (err) {
-    return next(new HttpError("Nepodařilo se uložit žáka", 500));
+    return next(new HttpError("Nepodařilo se uložit uživatele", 500));
   }
 
-  res.json({ msg: "Nový čaroděj mezi námi!" });
+  res.json({ msg: "Nový uživatel mezi námi!" });
 };
