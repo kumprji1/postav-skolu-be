@@ -10,6 +10,7 @@ const Project = require("../models/Project");
 const HttpError = require('../models/HttpError');
 const { testPDFCreation } = require('../pdf/pdf_testing');
 const { sendEmail_OrderCreated } = require('../utils/mail_service');
+const News = require('../models/News');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_KEY)
 
@@ -48,6 +49,22 @@ exports.getProjectByTitle = (req, res, next) => {
     });
 };
 
+/**
+ * News
+ */
+exports.getNewsByProjectId = (req, res, next) => {
+  const { projectId } = req.params;
+  News.find({ projectId: projectId })
+    .then((news) => {
+      if (news) 
+        res.json(news);
+      else
+        res.json([])
+    })
+    .catch((err) => {
+      return next(new HttpError('Nepodařilo se načíst aktuality', 500))
+    });
+}
 
 /**
  * Donatable

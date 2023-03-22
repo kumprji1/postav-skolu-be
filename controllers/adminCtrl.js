@@ -1,14 +1,14 @@
 const Donatable = require("../models/Donatable");
 const Project = require("../models/Project");
+const News = require("../models/News");
 
-const HttpError = require('../models/HttpError')
+const HttpError = require('../models/HttpError');
 
 // const { validationResult } = require("express-validator");
 
 // const checkErrors = () => {};
 
 // Projects
-
 exports.postCreateProject = async (req, res, next) => {
   try {
     await new Project({
@@ -41,8 +41,30 @@ exports.patchEditProject = async (req, res, next) => {
   }
 };
 
-// Donatables 
+// News
+exports.postCreateNews = async (req, res, next) => {
+  try {
+    // Check if project exists
+    const projectExists = await Project.exists({urlTitle: req.params.urlTitle})
+    if (!projectExists) {
+     return next(new HttpError('Projekt, ke kterému chcete vytvořit aktualitu, neexistuje', 500))
+    }
 
+    // Create and save news
+    await new News({
+      title: req.body.title,
+      text: req.body.text,
+      createdAt: new Date(),
+      projectId: projectExists._id,
+      deleted: false
+    }).save()
+    res.json({msg: 'OK'})
+  } catch (err) {
+    return next(new HttpError('Nepodařilo se vytvořit aktualitu', 500))
+  }
+}
+
+// Donatables 
 exports.postCreateDonatable = async (req, res, next) => {
   try {
     await new Donatable({

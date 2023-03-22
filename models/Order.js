@@ -61,10 +61,10 @@ const orderSchema = new Schema({
         type: String,
         required: false,
     },
-    deliveryMethod: {
-        type: String,
-        required: false
-    },
+    // deliveryMethod: {
+    //     type: String,
+    //     required: false
+    // },
     products: [{
         type: Number,
         required: false

@@ -16,6 +16,9 @@ router.use(readToken, isAdmin)
 router.post('/create-project', adminVlds.createOrEditProject, adminCtrl.postCreateProject)
 router.patch('/edit-project/:projectId', adminVlds.createOrEditProject, adminCtrl.patchEditProject)
 
+// News
+router.post('/create-news/:urlTitle', adminCtrl.postCreateNews)
+
 // Donatables
 router.post('/create-donatable/:projectId', adminCtrl.postCreateDonatable)
 
