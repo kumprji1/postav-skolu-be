@@ -23,10 +23,10 @@ const donatableSchema = new Schema({
         type: Number,
         required: true
     },
-    preparedPrices: [{
-        type: Number,
-        required: false
-    }],
+    preparedPrices: {
+        type: String,
+        required: true
+    },
     projectId: {
         type: mongoose.Types.ObjectId,
         ref: 'Project',

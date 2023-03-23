@@ -135,22 +135,72 @@ exports.postCreateNews = function _callee3(req, res, next) {
       }
     }
   }, null, null, [[0, 11]]);
-}; // Donatables 
+};
 
+exports.patchSetNewsDeleted = function (req, res, next) {
+  var newsId = req.params.newsId;
+  News.findOneAndUpdate({
+    _id: newsId
+  }, {
+    deleted: true
+  }).then(function (news) {
+    res.json({
+      msg: 'ok'
+    });
+  })["catch"](function (err) {
+    return next(new HttpError('Nepodařilo se odstranit aktualitu', 500));
+  });
+};
 
-exports.postCreateDonatable = function _callee4(req, res, next) {
+exports.patchEditNews = function _callee4(req, res, next) {
+  var updatedNews;
   return regeneratorRuntime.async(function _callee4$(_context4) {
     while (1) {
       switch (_context4.prev = _context4.next) {
         case 0:
           _context4.prev = 0;
           _context4.next = 3;
+          return regeneratorRuntime.awrap(News.findByIdAndUpdate(req.params.newsId, {
+            title: req.body.title,
+            text: req.body.text
+          }));
+
+        case 3:
+          updatedNews = _context4.sent;
+          res.json({
+            msg: "OK",
+            news: updatedNews
+          });
+          _context4.next = 10;
+          break;
+
+        case 7:
+          _context4.prev = 7;
+          _context4.t0 = _context4["catch"](0);
+          return _context4.abrupt("return", next(new HttpError("Nepodařilo se aktualizovat aktualitu", 500)));
+
+        case 10:
+        case "end":
+          return _context4.stop();
+      }
+    }
+  }, null, null, [[0, 7]]);
+}; // Donatables 
+
+
+exports.postCreateDonatable = function _callee5(req, res, next) {
+  return regeneratorRuntime.async(function _callee5$(_context5) {
+    while (1) {
+      switch (_context5.prev = _context5.next) {
+        case 0:
+          _context5.prev = 0;
+          _context5.next = 3;
           return regeneratorRuntime.awrap(new Donatable({
             title: req.body.title,
             desc: req.body.desc,
             earnedMoney: 0,
             demandedMoney: req.body.demandedMoney,
-            preparedPrices: [100, 200, 500],
+            preparedPrices: req.body.preparedPrices,
             photo: req.body.photo,
             deleted: false,
             projectId: req.params.projectId
@@ -160,18 +210,71 @@ exports.postCreateDonatable = function _callee4(req, res, next) {
           res.json({
             msg: 'OK'
           });
-          _context4.next = 9;
+          _context5.next = 9;
           break;
 
         case 6:
-          _context4.prev = 6;
-          _context4.t0 = _context4["catch"](0);
-          return _context4.abrupt("return", next(new HttpError('Nepodařilo se vytvořit darovatelný box', 500)));
+          _context5.prev = 6;
+          _context5.t0 = _context5["catch"](0);
+          return _context5.abrupt("return", next(new HttpError('Nepodařilo se vytvořit darovatelný box', 500)));
 
         case 9:
         case "end":
-          return _context4.stop();
+          return _context5.stop();
       }
     }
   }, null, null, [[0, 6]]);
+};
+
+exports.patchSetDonatableDeleted = function (req, res, next) {
+  var donatableId = req.params.donatableId;
+  Donatable.findOneAndUpdate({
+    _id: donatableId
+  }, {
+    deleted: true
+  }).then(function (news) {
+    res.json({
+      msg: 'ok'
+    });
+  })["catch"](function (err) {
+    return next(new HttpError('Nepodařilo se odstranit sbírku', 500));
+  });
+};
+
+exports.patchEditDonatable = function _callee6(req, res, next) {
+  var updatedDonatable;
+  return regeneratorRuntime.async(function _callee6$(_context6) {
+    while (1) {
+      switch (_context6.prev = _context6.next) {
+        case 0:
+          _context6.prev = 0;
+          _context6.next = 3;
+          return regeneratorRuntime.awrap(Donatable.findByIdAndUpdate(req.params.donatableId, {
+            title: req.body.title,
+            desc: req.body.desc,
+            demandedMoney: req.body.demandedMoney,
+            preparedPrices: req.body.preparedPrices,
+            photo: req.body.photo
+          }));
+
+        case 3:
+          updatedDonatable = _context6.sent;
+          res.json({
+            msg: "OK",
+            donatable: updatedDonatable
+          });
+          _context6.next = 10;
+          break;
+
+        case 7:
+          _context6.prev = 7;
+          _context6.t0 = _context6["catch"](0);
+          return _context6.abrupt("return", next(new HttpError("Nepodařilo se aktualizovat sbírku", 500)));
+
+        case 10:
+        case "end":
+          return _context6.stop();
+      }
+    }
+  }, null, null, [[0, 7]]);
 };

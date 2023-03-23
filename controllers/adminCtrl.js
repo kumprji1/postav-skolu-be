@@ -64,6 +64,30 @@ exports.postCreateNews = async (req, res, next) => {
   }
 }
 
+exports.patchSetNewsDeleted = (req, res, next) => {
+  const { newsId } = req.params;
+  News.findOneAndUpdate({ _id: newsId }, {deleted: true})
+    .then((news) => {
+      res.json({msg: 'ok'})
+    })
+    .catch((err) => {
+      return next(new HttpError('Nepodařilo se odstranit aktualitu', 500))
+    });
+}
+
+exports.patchEditNews = async (req, res, next) => {
+    try {
+      const updatedNews = await News.findByIdAndUpdate(req.params.newsId, {
+        title: req.body.title,
+        text: req.body.text
+      });
+      res.json({ msg: "OK", news: updatedNews });
+    } catch (err) {
+      return next(new HttpError("Nepodařilo se aktualizovat aktualitu", 500));
+    }
+  };
+  
+
 // Donatables 
 exports.postCreateDonatable = async (req, res, next) => {
   try {
@@ -72,7 +96,7 @@ exports.postCreateDonatable = async (req, res, next) => {
       desc: req.body.desc,
       earnedMoney: 0,
       demandedMoney: req.body.demandedMoney,
-      preparedPrices: [100, 200, 500],
+      preparedPrices: req.body.preparedPrices,
       photo: req.body.photo,
       deleted: false,
       projectId: req.params.projectId
@@ -82,4 +106,31 @@ exports.postCreateDonatable = async (req, res, next) => {
     return next(new HttpError('Nepodařilo se vytvořit darovatelný box', 500))
   }
 }
+
+exports.patchSetDonatableDeleted = (req, res, next) => {
+  const { donatableId } = req.params;
+  Donatable.findOneAndUpdate({ _id: donatableId }, {deleted: true})
+    .then((news) => {
+      res.json({msg: 'ok'})
+    })
+    .catch((err) => {
+      return next(new HttpError('Nepodařilo se odstranit sbírku', 500))
+    });
+}
+
+exports.patchEditDonatable = async (req, res, next) => {
+  try {
+    const updatedDonatable = await Donatable.findByIdAndUpdate(req.params.donatableId, {
+      title: req.body.title,
+      desc: req.body.desc,
+      demandedMoney: req.body.demandedMoney,
+      preparedPrices: req.body.preparedPrices,
+      photo: req.body.photo
+    });
+    res.json({ msg: "OK", donatable: updatedDonatable });
+  } catch (err) {
+    return next(new HttpError("Nepodařilo se aktualizovat sbírku", 500));
+  }
+};
+
 

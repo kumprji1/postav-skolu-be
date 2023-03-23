@@ -18,9 +18,13 @@ router.use(readToken, isAdmin); // Projects
 router.post('/create-project', adminVlds.createOrEditProject, adminCtrl.postCreateProject);
 router.patch('/edit-project/:projectId', adminVlds.createOrEditProject, adminCtrl.patchEditProject); // News
 
-router.post('/create-news/:urlTitle', adminCtrl.postCreateNews); // Donatables
+router.post('/create-news/:urlTitle', adminCtrl.postCreateNews);
+router.patch('/news/delete/:newsId', adminCtrl.patchSetNewsDeleted);
+router.patch('/edit-news/:newsId', adminCtrl.patchEditNews); // Donatables
 
-router.post('/create-donatable/:projectId', adminCtrl.postCreateDonatable); // Donations 
+router.post('/create-donatable/:projectId', adminCtrl.postCreateDonatable);
+router.patch('/donatable/delete/:donatableId', adminCtrl.patchSetDonatableDeleted);
+router.patch('/edit-donatable/:donatableId', adminCtrl.patchEditDonatable); // Donations 
 // Orders
 
 /**

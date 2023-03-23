@@ -1,16 +1,18 @@
 const { v4: uuidv4 } = require('uuid');
 
 const mongoose = require("mongoose");
+
+const News = require('../models/News');
 const Donatable = require("../models/Donatable");
 const Donation = require("../models/Donation");
-
 const LandPiece = require("../models/LandPiece");
 const Order = require("../models/Order");
 const Project = require("../models/Project");
 const HttpError = require('../models/HttpError');
+
 const { testPDFCreation } = require('../pdf/pdf_testing');
 const { sendEmail_OrderCreated } = require('../utils/mail_service');
-const News = require('../models/News');
+
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_KEY)
 
@@ -19,7 +21,7 @@ const stripe = require('stripe')(process.env.STRIPE_KEY)
  */
 exports.getProject = async (req, res, next) => {
   const { projectId } = req.params;
-  Project.findById(projectId)
+  Project.findOne({_id: projectId})
     .then((project) => {
       res.json(project);
     })
@@ -54,7 +56,7 @@ exports.getProjectByTitle = (req, res, next) => {
  */
 exports.getNewsByProjectId = (req, res, next) => {
   const { projectId } = req.params;
-  News.find({ projectId: projectId })
+  News.find({ projectId: projectId, deleted: false })
     .then((news) => {
       if (news) 
         res.json(news);
@@ -66,6 +68,18 @@ exports.getNewsByProjectId = (req, res, next) => {
     });
 }
 
+exports.getNewsItem = async (req, res, next) => {
+  const { newsId } = req.params;
+  News.findById(newsId).populate('projectId')
+    .then((news) => {
+      res.json(news);
+    })
+    .catch((err) => 
+     next(new HttpError('Nepodařilo se načíst aktualitu', 500)));
+
+}
+
+
 /**
  * Donatable
  */
@@ -74,7 +88,7 @@ exports.getDonatablesByProjectId = async (req, res, next) => {
   const projectId = req.params.projectId
   let donatables = []
   try {
-    donatables = await Donatable.find({ projectId: projectId})
+    donatables = await Donatable.find({ projectId: projectId, deleted: false})
     for (const donatable of donatables) {
       
     }
@@ -82,6 +96,16 @@ exports.getDonatablesByProjectId = async (req, res, next) => {
     console.log(err);
   }
   res.json(donatables)
+}
+exports.getDonatableById = async (req, res, next) => {
+  const { donatableId } = req.params;
+  Donatable.findById(donatableId)
+    .then((donatable) => {
+      res.json(donatable);
+    })
+    .catch((err) => 
+     next(new HttpError('Nepodařilo se načíst aktualitu', 500)));
+
 }
 
 /**
