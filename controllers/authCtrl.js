@@ -264,7 +264,6 @@ exports.postRegisterUser = async (req, res, next) => {
     }
   }
 
-  console.log('Uživatel před google tu je, tak toto by nemělo projít')
   const newUser = new User({
     email: req.body.email,
     name: req.body.name,

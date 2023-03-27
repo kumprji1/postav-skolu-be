@@ -82,6 +82,21 @@ exports.patchEditProject = function _callee2(req, res, next) {
       }
     }
   }, null, null, [[0, 7]]);
+};
+
+exports.patchSetProjectDeleted = function (req, res, next) {
+  var projectId = req.params.projectId;
+  Project.findOneAndUpdate({
+    _id: projectId
+  }, {
+    deleted: true
+  }).then(function (project) {
+    res.json({
+      msg: 'ok'
+    });
+  })["catch"](function (err) {
+    return next(new HttpError('Nepodařilo se odstranit projekt', 500));
+  });
 }; // News
 
 

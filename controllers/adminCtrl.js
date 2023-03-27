@@ -41,6 +41,18 @@ exports.patchEditProject = async (req, res, next) => {
   }
 };
 
+exports.patchSetProjectDeleted = (req, res, next) => {
+  const { projectId } = req.params;
+  Project.findOneAndUpdate({ _id: projectId }, {deleted: true})
+    .then((project) => {
+      res.json({msg: 'ok'})
+    })
+    .catch((err) => {
+      return next(new HttpError('Nepodařilo se odstranit projekt', 500))
+    });
+}
+
+
 // News
 exports.postCreateNews = async (req, res, next) => {
   try {

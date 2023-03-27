@@ -12,7 +12,7 @@ const userRoutes = require('./routes/userRoutes')
 
 // Stripe stuff
 const stripe = require('stripe')(process.env.STRIPE_KEY)
-// cd C:\Users\gorto\Downloads\stripe_1.13.12_windows_x86_64cd C:\Users\gorto\Downloads\stripe_1.13.12_windows_x86_64
+// cd C:\Users\gorto\Downloads\stripe_1.13.12_windows_x86_64
 // stripe listen --forward-to localhost:5000/webhook
 const endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
 
@@ -23,7 +23,7 @@ const Order = require('./models/Order');
 // Enabling .env variables
 require('dotenv').config();
 
-const { createProjects, createFewLandPiecesO3, createPayment, createDonatables } = require('./scripts/data-init');
+const { createProjects, createFewLandPiecesO3, createPayment, createDonatables, updateProjectDeletedFalse } = require('./scripts/data-init');
 const Donation = require('./models/Donation');
 const Donatable = require('./models/Donatable');
 const { testPDFCreation } = require('./pdf/pdf_testing');
@@ -145,5 +145,6 @@ mongoose.connect(MONGODB_URI, {useNewUrlParser: true}).then(() => {
     // createPayment()
     // testPDFCreation()
     // sendTestEmail();
+    // updateProjectDeletedFalse()
 }).catch(err => console.log(err))
 

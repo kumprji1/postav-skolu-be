@@ -63,7 +63,9 @@ exports.getProject = function _callee(req, res, next) {
 };
 
 exports.getProjects = function (req, res, next) {
-  Project.find().then(function (projects) {
+  Project.find({
+    deleted: false
+  }).then(function (projects) {
     res.json(projects);
   })["catch"](function (err) {
     return console.log(err);

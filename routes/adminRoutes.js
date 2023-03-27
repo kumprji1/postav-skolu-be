@@ -15,6 +15,7 @@ router.use(readToken, isAdmin)
 // Projects
 router.post('/create-project', adminVlds.createOrEditProject, adminCtrl.postCreateProject)
 router.patch('/edit-project/:projectId', adminVlds.createOrEditProject, adminCtrl.patchEditProject)
+router.patch('/project/delete/:projectId', adminCtrl.patchSetProjectDeleted)
 
 // News
 router.post('/create-news/:urlTitle', adminCtrl.postCreateNews)

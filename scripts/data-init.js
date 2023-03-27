@@ -12257,3 +12257,8 @@ exports.createPayment = async () => {
       console.log('EROOOOOR: ', error);
     });
 };
+
+
+exports.updateProjectDeletedFalse = async () => {
+ await Project.updateMany({}, {deleted: false})
+}

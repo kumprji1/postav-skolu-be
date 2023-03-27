@@ -30,7 +30,7 @@ exports.getProject = async (req, res, next) => {
 }
 
 exports.getProjects = (req, res, next) => {
-  Project.find()
+  Project.find({deleted: false})
     .then((projects) => {
       res.json(projects);
     })
