@@ -262,7 +262,11 @@ app.use(function (req, res, next) {
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api', sharedRoutes); // Handeling errors
+app.use('/api', sharedRoutes); // Serving react app
+
+app.use(function (req, res) {
+  res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+}); // Handeling errors
 
 app.use(function (error, req, res, next) {
   console.log(error);

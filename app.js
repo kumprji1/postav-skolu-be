@@ -125,6 +125,11 @@ app.use('/api/admin', adminRoutes)
 app.use('/api/user', userRoutes)
 app.use('/api', sharedRoutes)
 
+// Serving react app
+app.use((req, res) => {
+	res.sendFile(path.resolve(__dirname, 'public', 'index.html'))
+})
+
 // Handeling errors
 app.use((error, req, res, next) => {
 	console.log(error);
