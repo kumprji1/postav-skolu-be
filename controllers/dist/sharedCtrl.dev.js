@@ -33,7 +33,7 @@ var _require3 = require('../utils/mail_service'),
 
 require('dotenv').config();
 
-var stripe = require('stripe')(process.env.STRIPE_KEY);
+var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 /**
  * Project
  */

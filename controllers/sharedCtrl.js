@@ -14,7 +14,7 @@ const { createBillPDF } = require('../utils/pdf_service');
 const { sendEmail_OrderCreated } = require('../utils/mail_service');
 
 require('dotenv').config();
-const stripe = require('stripe')(process.env.STRIPE_KEY)
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 
 /**
  * Project

@@ -18,11 +18,11 @@ var adminRoutes = require('./routes/adminRoutes');
 var userRoutes = require('./routes/userRoutes'); // Stripe stuff
 
 
-var stripe = require('stripe')(process.env.STRIPE_KEY); // cd C:\Users\gorto\Downloads\stripe_1.13.12_windows_x86_64
+var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // cd C:\Users\gorto\Downloads\stripe_1.13.12_windows_x86_64
 // stripe listen --forward-to localhost:5000/webhook
 
 
-var endpointSecret = process.env.STRIPE_ENDPOINT_SECRET;
+var endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 var Order = require('./models/Order'); // Enabling .env variables
 
