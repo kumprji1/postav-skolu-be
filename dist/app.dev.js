@@ -40,7 +40,7 @@ var Donation = require('./models/Donation');
 
 var Donatable = require('./models/Donatable');
 
-var _require2 = require('./pdf/pdf_testing'),
+var _require2 = require('./utils/pdf_service'),
     testPDFCreation = _require2.testPDFCreation;
 
 var _require3 = require('./utils/mail_service'),

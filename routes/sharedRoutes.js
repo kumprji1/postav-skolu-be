@@ -6,7 +6,7 @@ const router = express.Router();
 
 // Projects
 router.get('/projects/:projectId', sharedCtrl.getProject)
-router.get('/projects-by-title/:urlTitle', sharedCtrl.getProjectByTitle)
+router.get('/projects-by-url-title/:urlTitle', sharedCtrl.getProjectByTitle)
 router.get('/projects', sharedCtrl.getProjects)
 
 // News

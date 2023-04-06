@@ -23,9 +23,9 @@ exports.addOrEditProduct = [
     .withMessage("Množství musí být číslo"),
 ];
 
-exports.postAddOrEditEvent = [
+exports.postAddOrEditNews = [
   check("title").notEmpty().withMessage("Zadejte název"),
-  check("description").notEmpty().withMessage("Zadejte popis"),
+  check("text").notEmpty().withMessage("Zadejte text"),
 ];
 
 exports.postAddOrEditQuestion = [

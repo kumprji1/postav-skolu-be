@@ -26,7 +26,7 @@ require('dotenv').config();
 const { createProjects, createFewLandPiecesO3, createPayment, createDonatables, updateProjectDeletedFalse } = require('./scripts/data-init');
 const Donation = require('./models/Donation');
 const Donatable = require('./models/Donatable');
-const { testPDFCreation } = require('./pdf/pdf_testing');
+const { testPDFCreation } = require('./utils/pdf_service');
 const { sendTestEmail, sendEmail_OrderPurchasedAndBill } = require('./utils/mail_service');
 
 const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWD}@cluster0.orv11.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;

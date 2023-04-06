@@ -14,7 +14,7 @@ exports.postRegisterUser = [
 ]
 
 exports.postLoginUserGoogle = [
-  check("email").notEmpty().withMessage("Zadejte email"),
+  check("email").notEmpty().isEmail().withMessage("Zadejte email"),
   check("name").notEmpty().withMessage("Zadejte jméno"),
   check("surname").notEmpty().withMessage("Zadejte příjmení"),
 ]

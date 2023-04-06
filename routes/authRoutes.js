@@ -9,6 +9,8 @@ router.post("/login", authVldt.postLogin, authCtrl.postLogin);
 
 router.post("/register-user", authVldt.postRegisterUser, authCtrl.postRegisterUser);
 
+router.post("/register-admin", authVldt.postRegisterUser, authCtrl.postRegisterAdmin);
+
 router.post("/login-google", authVldt.postLoginUserGoogle, authCtrl.postLoginUser_Google)
 
 module.exports = router;

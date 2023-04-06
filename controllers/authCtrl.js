@@ -187,19 +187,20 @@ exports.postRegisterAdmin = async (req, res, next) => {
   }
 
   const newAdmin = new User({
+    email: req.body.email,
     name: req.body.name,
     surname: req.body.surname,
-    username: req.body.username,
     password: hashedPassword,
     role: Roles.ADMIN,
-    belong: AuthServices.LOCAL,
+    isLocallyCreated: true,
+    isGoogleAssociated: false,
   });
 
   // Saving to the database
   try {
     await newAdmin.save();
   } catch (err) {
-    return next(new HttpError("Nepodařilo se uložit učitele", 500));
+    return next(new HttpError("Nepodařilo se uložit admina", 500));
   }
 
   res.json({ msg: "Admin created!" });

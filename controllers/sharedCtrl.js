@@ -10,7 +10,7 @@ const Order = require("../models/Order");
 const Project = require("../models/Project");
 const HttpError = require('../models/HttpError');
 
-const { testPDFCreation } = require('../pdf/pdf_testing');
+const { createBillPDF } = require('../utils/pdf_service');
 const { sendEmail_OrderCreated } = require('../utils/mail_service');
 
 require('dotenv').config();
@@ -231,7 +231,7 @@ let donations = req.body.donations.map(don => ({
   price: don.price.toString()
 }));
 
-testPDFCreation({...contact, donations}, newOrder._id.toString())
+createBillPDF({...contact, donations}, newOrder._id.toString())
 sendEmail_OrderCreated(req.body.contact.email)
 
   res.json({ sessionUrl: session.url, message: 'Order created! ', orderId: newOrder._id })

@@ -3,7 +3,7 @@ const pdf = require("pdf-creator-node");
 const fs = require("fs");
 const path = require("path");
 
-exports.testPDFCreation = (data, id) => {
+exports.createBillPDF = (data, id) => {
   // Read HTML Template
   const html = fs.readFileSync(
     path.join(__dirname, "pdf_template.html"),

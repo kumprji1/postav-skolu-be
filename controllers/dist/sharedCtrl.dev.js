@@ -25,8 +25,8 @@ var Project = require("../models/Project");
 
 var HttpError = require('../models/HttpError');
 
-var _require2 = require('../pdf/pdf_testing'),
-    testPDFCreation = _require2.testPDFCreation;
+var _require2 = require('../utils/pdf_service'),
+    createBillPDF = _require2.createBillPDF;
 
 var _require3 = require('../utils/mail_service'),
     sendEmail_OrderCreated = _require3.sendEmail_OrderCreated;
@@ -446,7 +446,7 @@ exports.postCreateOrder = function _callee6(req, res, next) {
               price: don.price.toString()
             };
           });
-          testPDFCreation(_objectSpread({}, contact, {
+          createBillPDF(_objectSpread({}, contact, {
             donations: donations
           }), newOrder._id.toString());
           sendEmail_OrderCreated(req.body.contact.email);
