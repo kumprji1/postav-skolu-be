@@ -310,7 +310,7 @@ exports.postCreateOrder = function _callee6(req, res, next) {
             price: donation.price,
             donatableId: donation.donatableId,
             createdAt: new Date(),
-            isPurchased: true,
+            isPurchased: false,
             isAnonymous: donation.isAnonymous,
             note: donation.note,
             name: donName
@@ -387,7 +387,7 @@ exports.postCreateOrder = function _callee6(req, res, next) {
             donations: donationsIDs,
             totalAmount: totalAmount,
             uuid: uuid,
-            isPurchased: true,
+            isPurchased: false,
             createdAt: new Date()
           });
           _context6.next = 37;
