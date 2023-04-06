@@ -143,7 +143,7 @@ app.use((error, req, res, next) => {
 
 // Database conn
 mongoose.connect(MONGODB_URI, {useNewUrlParser: true}).then(() => {
-    app.listen(5000)
+    app.listen(process.env.PORT)
     // createProjects()
     // createDonatables()
     // createFewLandPiecesO3()
