@@ -83,7 +83,6 @@ exports.getNewsItem = async (req, res, next) => {
 /**
  * Donatable
  */
-
 exports.getDonatablesByProjectId = async (req, res, next) => {
   const projectId = req.params.projectId
   let donatables = []
@@ -111,7 +110,6 @@ exports.getDonatableById = async (req, res, next) => {
 /**
  * Donations
  */
-
 exports.getDonationsByDonatableId = async (req, res, next) => {
   let donations = []
   try {
@@ -149,7 +147,7 @@ exports.postCreateOrder = async (req, res, next) => {
       price: donation.price,
       donatableId: donation.donatableId,
       createdAt: new Date(),
-      isPurchased: false,
+      isPurchased: true,
       isAnonymous: donation.isAnonymous,
       note: donation.note,
       name: donName
@@ -185,7 +183,7 @@ exports.postCreateOrder = async (req, res, next) => {
     donations: donationsIDs,
     totalAmount: totalAmount,
     uuid: uuid,
-    isPurchased: false,
+    isPurchased: true,
     createdAt: new Date(),
   });
   await newOrder.save();
