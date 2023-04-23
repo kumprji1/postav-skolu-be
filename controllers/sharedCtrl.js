@@ -123,7 +123,7 @@ exports.getDonationsByDonatableId = async (req, res, next) => {
 exports.getDonations = async (req, res, next) => {
   let donations = []
   try {
-    donations = await Donation.find({ isPurchased: true })
+    donations = await Donation.find({ isPurchased: true }).populate('donatableId')
   } catch (err) {
     console.log(err)
   }

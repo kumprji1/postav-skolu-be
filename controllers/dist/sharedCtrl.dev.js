@@ -275,7 +275,7 @@ exports.getDonations = function _callee6(req, res, next) {
           _context6.next = 4;
           return regeneratorRuntime.awrap(Donation.find({
             isPurchased: true
-          }));
+          }).populate('donatableId'));
 
         case 4:
           donations = _context6.sent;
