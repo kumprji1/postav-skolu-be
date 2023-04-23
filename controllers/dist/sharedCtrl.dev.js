@@ -303,7 +303,7 @@ exports.getDonations = function _callee6(req, res, next) {
 
 
 exports.postCreateOrder = function _callee7(req, res, next) {
-  var totalAmount, donationsIDs, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, donation, donName, newDonation, uuid, newOrder, session, contact, donations;
+  var totalAmount, donationsIDs, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, donation, donName, newDonation, uuid, newOrder, session, contact, donations, orderId, sessionDB, order, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, donationId, don, donatable;
 
   return regeneratorRuntime.async(function _callee7$(_context7) {
     while (1) {
@@ -344,7 +344,7 @@ exports.postCreateOrder = function _callee7(req, res, next) {
             price: donation.price,
             donatableId: donation.donatableId,
             createdAt: new Date(),
-            isPurchased: true,
+            isPurchased: false,
             isAnonymous: donation.isAnonymous,
             note: donation.note,
             name: donName
@@ -421,7 +421,7 @@ exports.postCreateOrder = function _callee7(req, res, next) {
             donations: donationsIDs,
             totalAmount: totalAmount,
             uuid: uuid,
-            isPurchased: true,
+            isPurchased: false,
             createdAt: new Date()
           });
           _context7.next = 37;
@@ -488,15 +488,158 @@ exports.postCreateOrder = function _callee7(req, res, next) {
             sessionUrl: session.url,
             message: 'Order created! ',
             orderId: newOrder._id
-          }); // res.json({message: 'Order created! ', orderId: newOrder._id})
-          // lets PAYYY
+          }); // lets PAYYY (HEROKU only
+          // Fulfill the purchase...
 
-        case 53:
+          orderId = newOrder._id;
+          console.log('set this order and its donations as purchased: ', orderId);
+          _context7.next = 57;
+          return regeneratorRuntime.awrap(mongoose.startSession());
+
+        case 57:
+          sessionDB = _context7.sent;
+          sessionDB.startTransaction();
+          _context7.prev = 59;
+          _context7.next = 62;
+          return regeneratorRuntime.awrap(Order.findOneAndUpdate({
+            _id: orderId
+          }, {
+            isPurchased: true,
+            purchasedAt: new Date()
+          }));
+
+        case 62:
+          order = _context7.sent;
+
+          if (order) {
+            _context7.next = 67;
+            break;
+          }
+
+          _context7.next = 66;
+          return regeneratorRuntime.awrap(sessionDB.abortTransaction());
+
+        case 66:
+          throw new Error('Transakce se nezdařila');
+
+        case 67:
+          _iteratorNormalCompletion3 = true;
+          _didIteratorError3 = false;
+          _iteratorError3 = undefined;
+          _context7.prev = 70;
+          _iterator3 = order.donations[Symbol.iterator]();
+
+        case 72:
+          if (_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done) {
+            _context7.next = 87;
+            break;
+          }
+
+          donationId = _step3.value;
+          _context7.next = 76;
+          return regeneratorRuntime.awrap(Donation.findByIdAndUpdate({
+            _id: donationId
+          }, {
+            $set: {
+              isPurchased: true
+            }
+          }));
+
+        case 76:
+          don = _context7.sent;
+          _context7.next = 79;
+          return regeneratorRuntime.awrap(Donatable.updateOne({
+            _id: don.donatableId
+          }, {
+            $inc: {
+              earnedMoney: don.price
+            }
+          }));
+
+        case 79:
+          donatable = _context7.sent;
+
+          if (!(!don || !donatable)) {
+            _context7.next = 84;
+            break;
+          }
+
+          _context7.next = 83;
+          return regeneratorRuntime.awrap(sessionDB.abortTransaction());
+
+        case 83:
+          throw new Error('Transakce se nezdařila');
+
+        case 84:
+          _iteratorNormalCompletion3 = true;
+          _context7.next = 72;
+          break;
+
+        case 87:
+          _context7.next = 93;
+          break;
+
+        case 89:
+          _context7.prev = 89;
+          _context7.t2 = _context7["catch"](70);
+          _didIteratorError3 = true;
+          _iteratorError3 = _context7.t2;
+
+        case 93:
+          _context7.prev = 93;
+          _context7.prev = 94;
+
+          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+            _iterator3["return"]();
+          }
+
+        case 96:
+          _context7.prev = 96;
+
+          if (!_didIteratorError3) {
+            _context7.next = 99;
+            break;
+          }
+
+          throw _iteratorError3;
+
+        case 99:
+          return _context7.finish(96);
+
+        case 100:
+          return _context7.finish(93);
+
+        case 101:
+          _context7.next = 103;
+          return regeneratorRuntime.awrap(sessionDB.commitTransaction());
+
+        case 103:
+          sendEmail_OrderPurchasedAndBill(order.contact.email, {
+            orderId: order._id
+          });
+          _context7.next = 111;
+          break;
+
+        case 106:
+          _context7.prev = 106;
+          _context7.t3 = _context7["catch"](59);
+          _context7.next = 110;
+          return regeneratorRuntime.awrap(sessionDB.abortTransaction());
+
+        case 110:
+          console.log(_context7.t3);
+
+        case 111:
+          _context7.prev = 111;
+          sessionDB.endSession();
+          return _context7.finish(111);
+
+        case 114:
         case "end":
           return _context7.stop();
       }
     }
-  }, null, null, [[5, 20, 24, 32], [25,, 27, 31], [40, 45]]);
+  }, null, null, [[5, 20, 24, 32], [25,, 27, 31], [40, 45], [59, 106, 111, 114], [70, 89, 93, 101], [94,, 96, 100]]);
 };
 
 exports.getOrderByIdAndUUID = function _callee8(req, res, next) {
@@ -581,7 +724,7 @@ exports.getFewLandPiecesO3 = function _callee9(req, res, next) {
 };
 
 exports.postBuyPieces = function _callee10(req, res, next) {
-  var piecesToBuy, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, piece;
+  var piecesToBuy, _iteratorNormalCompletion4, _didIteratorError4, _iteratorError4, _iterator4, _step4, piece;
 
   return regeneratorRuntime.async(function _callee10$(_context10) {
     while (1) {
@@ -591,19 +734,19 @@ exports.postBuyPieces = function _callee10(req, res, next) {
           piecesToBuy = req.body.landPiecesState.piecesToBuy; // const session = await mongoose.startSession();
           // session.startSession();
 
-          _iteratorNormalCompletion3 = true;
-          _didIteratorError3 = false;
-          _iteratorError3 = undefined;
+          _iteratorNormalCompletion4 = true;
+          _didIteratorError4 = false;
+          _iteratorError4 = undefined;
           _context10.prev = 5;
-          _iterator3 = piecesToBuy[Symbol.iterator]();
+          _iterator4 = piecesToBuy[Symbol.iterator]();
 
         case 7:
-          if (_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done) {
+          if (_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done) {
             _context10.next = 14;
             break;
           }
 
-          piece = _step3.value;
+          piece = _step4.value;
           _context10.next = 11;
           return regeneratorRuntime.awrap(LandPiece.updateOne({
             number: piece.number
@@ -614,7 +757,7 @@ exports.postBuyPieces = function _callee10(req, res, next) {
           }));
 
         case 11:
-          _iteratorNormalCompletion3 = true;
+          _iteratorNormalCompletion4 = true;
           _context10.next = 7;
           break;
 
@@ -625,26 +768,26 @@ exports.postBuyPieces = function _callee10(req, res, next) {
         case 16:
           _context10.prev = 16;
           _context10.t0 = _context10["catch"](5);
-          _didIteratorError3 = true;
-          _iteratorError3 = _context10.t0;
+          _didIteratorError4 = true;
+          _iteratorError4 = _context10.t0;
 
         case 20:
           _context10.prev = 20;
           _context10.prev = 21;
 
-          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-            _iterator3["return"]();
+          if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+            _iterator4["return"]();
           }
 
         case 23:
           _context10.prev = 23;
 
-          if (!_didIteratorError3) {
+          if (!_didIteratorError4) {
             _context10.next = 26;
             break;
           }
 
-          throw _iteratorError3;
+          throw _iteratorError4;
 
         case 26:
           return _context10.finish(23);

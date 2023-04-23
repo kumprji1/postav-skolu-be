@@ -156,7 +156,7 @@ exports.postCreateOrder = async (req, res, next) => {
       price: donation.price,
       donatableId: donation.donatableId,
       createdAt: new Date(),
-      isPurchased: true,
+      isPurchased: false,
       isAnonymous: donation.isAnonymous,
       note: donation.note,
       name: donName
@@ -192,7 +192,7 @@ exports.postCreateOrder = async (req, res, next) => {
     donations: donationsIDs,
     totalAmount: totalAmount,
     uuid: uuid,
-    isPurchased: true,
+    isPurchased: false,
     createdAt: new Date(),
   });
   await newOrder.save();
@@ -244,8 +244,41 @@ sendEmail_OrderCreated(req.body.contact.email)
   res.json({ sessionUrl: session.url, message: 'Order created! ', orderId: newOrder._id })
 
   
-  // res.json({message: 'Order created! ', orderId: newOrder._id})
-  // lets PAYYY
+  // lets PAYYY (HEROKU only
+    // Fulfill the purchase...
+    const orderId = newOrder._id
+    console.log('set this order and its donations as purchased: ', orderId)
+  
+    const sessionDB = await mongoose.startSession()
+    sessionDB.startTransaction()
+    try {
+      const order = await Order.findOneAndUpdate({_id: orderId}, {isPurchased: true, purchasedAt: new Date()})
+      if (!order) {
+        await sessionDB.abortTransaction()
+        throw new Error('Transakce se nezdařila')
+      }
+      for (const donationId of order.donations) {
+        // If it's already bought
+        const don = await Donation.findByIdAndUpdate(
+          { _id: donationId },
+          { $set: { isPurchased: true } }
+        );
+        const donatable = await Donatable.updateOne({_id: don.donatableId}, { $inc: { earnedMoney: don.price } })
+        if (!don || ! donatable) {
+          await sessionDB.abortTransaction()
+          throw new Error('Transakce se nezdařila')
+        }
+      }
+      await sessionDB.commitTransaction()
+      sendEmail_OrderPurchasedAndBill(order.contact.email, {orderId: order._id})
+    } catch (error) {
+      await sessionDB.abortTransaction()
+      console.log(error)
+    } finally {
+      sessionDB.endSession()
+    }
+    
+  
 
 };
 
