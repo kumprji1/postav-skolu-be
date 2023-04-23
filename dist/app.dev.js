@@ -15,7 +15,12 @@ var authRoutes = require('./routes/authRoutes');
 
 var adminRoutes = require('./routes/adminRoutes');
 
-var userRoutes = require('./routes/userRoutes'); // Stripe stuff
+var userRoutes = require('./routes/userRoutes'); // Security
+
+
+var helmet = require('helmet');
+
+var cors = require('cors'); // Stripe stuff
 
 
 var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // cd C:\Users\gorto\Downloads\stripe_1.13.12_windows_x86_64
@@ -48,7 +53,20 @@ var _require3 = require('./utils/mail_service'),
     sendEmail_OrderPurchasedAndBill = _require3.sendEmail_OrderPurchasedAndBill;
 
 var MONGODB_URI = "mongodb+srv://".concat(process.env.DB_USER, ":").concat(process.env.DB_PASSWD, "@cluster0.orv11.mongodb.net/").concat(process.env.DB_NAME, "?retryWrites=true&w=majority");
-var app = express(); // Cors
+var app = express(); // Security conf
+// app.use(helmet())
+// let whitelist = ['http://localhost:3000', 'http://localhost:5000', 'https://postav-skolu.herokuapp.com/'];
+// var corsOptionsDelegate = function(req, callback){
+//   var corsOptions;
+//   if(whitelist.indexOf(req.header('Origin')) !== -1){
+//     corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
+//   }else{
+//     corsOptions = { origin: false }; // disable CORS for this request
+//   }
+//   callback(null, corsOptions); // callback expects two parameters: error and options
+// };
+// app.use(cors(corsOptionsDelegate))
+// Cors
 
 app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');

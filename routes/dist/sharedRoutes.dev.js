@@ -16,7 +16,8 @@ router.get('/news-item/:newsId', sharedCtrl.getNewsItem); // Donatables
 router.get('/donatables-by-project-id/:projectId', sharedCtrl.getDonatablesByProjectId);
 router.get('/donatables/:donatableId', sharedCtrl.getDonatableById); // Donations 
 
-router.get('/donations/:donatableId', sharedCtrl.getDonationsByDonatableId); // Orders
+router.get('/donations/:donatableId', sharedCtrl.getDonationsByDonatableId);
+router.get('/donations', sharedCtrl.getDonations); // Orders
 
 router.post('/create-order', sharedCtrl.postCreateOrder);
 router.get('/order/:orderId', sharedCtrl.getOrderByIdAndUUID);

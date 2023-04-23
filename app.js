@@ -10,6 +10,10 @@ const authRoutes = require('./routes/authRoutes')
 const adminRoutes = require('./routes/adminRoutes')
 const userRoutes = require('./routes/userRoutes')
 
+// Security
+const helmet = require('helmet')
+const cors = require('cors')
+
 // Stripe stuff
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 // cd C:\Users\gorto\Downloads\stripe_1.13.12_windows_x86_64
@@ -32,6 +36,21 @@ const { sendTestEmail, sendEmail_OrderPurchasedAndBill } = require('./utils/mail
 const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWD}@cluster0.orv11.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
 const app = express();
+
+// Security conf
+// app.use(helmet())
+// let whitelist = ['http://localhost:3000', 'http://localhost:5000', 'https://postav-skolu.herokuapp.com/'];
+// var corsOptionsDelegate = function(req, callback){
+//   var corsOptions;
+//   if(whitelist.indexOf(req.header('Origin')) !== -1){
+//     corsOptions = { origin: true }; // reflect (enable) the requested origin in the CORS response
+//   }else{
+//     corsOptions = { origin: false }; // disable CORS for this request
+//   }
+//   callback(null, corsOptions); // callback expects two parameters: error and options
+// };
+ 
+// app.use(cors(corsOptionsDelegate))
 
 // Cors
 app.use((req, res, next) => {

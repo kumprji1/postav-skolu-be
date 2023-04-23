@@ -120,6 +120,15 @@ exports.getDonationsByDonatableId = async (req, res, next) => {
   res.json(donations)
 }
 
+exports.getDonations = async (req, res, next) => {
+  let donations = []
+  try {
+    donations = await Donation.find({ isPurchased: true })
+  } catch (err) {
+    console.log(err)
+  }
+  res.json(donations)
+}
 /**
  * Order
  */
