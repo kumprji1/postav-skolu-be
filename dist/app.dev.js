@@ -39,7 +39,8 @@ var _require = require('./scripts/data-init'),
     createFewLandPiecesO3 = _require.createFewLandPiecesO3,
     createPayment = _require.createPayment,
     createDonatables = _require.createDonatables,
-    updateProjectDeletedFalse = _require.updateProjectDeletedFalse;
+    updateProjectDeletedFalse = _require.updateProjectDeletedFalse,
+    updateDonatables_setEarnedZeroMoney = _require.updateDonatables_setEarnedZeroMoney;
 
 var Donation = require('./models/Donation');
 
@@ -80,8 +81,7 @@ app.use(express["static"](path.join('public'))); // Stripe Listener
 app.post('/webhook', bodyParser.raw({
   type: 'application/json'
 }), function _callee(request, response) {
-  var payload, sig, event, session, orderId, sessionDB, order, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, donationId, don, donatable;
-
+  var payload, sig, event, session;
   return regeneratorRuntime.async(function _callee$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
@@ -101,180 +101,55 @@ app.post('/webhook', bodyParser.raw({
           return _context.abrupt("return", response.status(400).send("Webhook Error: ".concat(_context.t0.message)));
 
         case 11:
-          if (!(event.type === 'checkout.session.completed')) {
-            _context.next = 75;
-            break;
+          // Handle the checkout.session.completed event
+          if (event.type === 'checkout.session.completed') {
+            console.log('checkout.session.completed'); // Retrieve the session. If you require line items in the response, you may include them by expanding line_items.
+
+            session = event.data.object; // Fulfill the purchase...
+            // Pro testovací účely je objednávka nastavená jako zaplacená ihned po vytvoření, násleudjící zakomentovaný kód by se provedl při ostrém nasazení
+            // const orderId = session.success_url.split('/')[4].split('?')[0].trim()
+            // console.log('set this order and its donations as purchased: ', orderId)
+            // const sessionDB = await mongoose.startSession()
+            // sessionDB.startTransaction()
+            // try {
+            //   const order = await Order.findOneAndUpdate({_id: orderId}, {isPurchased: true, purchasedAt: new Date()})
+            //   if (!order) {
+            //     await sessionDB.abortTransaction()
+            //     throw new Error('Transakce se nezdařila')
+            //   }
+            //   for (const donationId of order.donations) {
+            //     // If it's already bought
+            //     const don = await Donation.findByIdAndUpdate(
+            //       { _id: donationId },
+            //       { $set: { isPurchased: true } }
+            //     );
+            //     const donatable = await Donatable.updateOne({_id: don.donatableId}, { $inc: { earnedMoney: don.price } })
+            //     if (!don || ! donatable) {
+            //       await sessionDB.abortTransaction()
+            //       throw new Error('Transakce se nezdařila')
+            //     }
+            //   }
+            //   await sessionDB.commitTransaction()
+            //   sendEmail_OrderPurchasedAndBill(order.contact.email, {orderId: order._id})
+            // } catch (error) {
+            //   await sessionDB.abortTransaction()
+            //   console.log(error)
+            // } finally {
+            //   sessionDB.endSession()
+            // }
           }
 
-          console.log('checkout.session.completed'); // Retrieve the session. If you require line items in the response, you may include them by expanding line_items.
-
-          session = event.data.object; // Fulfill the purchase...
-
-          orderId = session.success_url.split('/')[4].split('?')[0].trim();
-          console.log('set this order and its donations as purchased: ', orderId);
-          _context.next = 18;
-          return regeneratorRuntime.awrap(mongoose.startSession());
-
-        case 18:
-          sessionDB = _context.sent;
-          sessionDB.startTransaction();
-          _context.prev = 20;
-          _context.next = 23;
-          return regeneratorRuntime.awrap(Order.findOneAndUpdate({
-            _id: orderId
-          }, {
-            isPurchased: true,
-            purchasedAt: new Date()
-          }));
-
-        case 23:
-          order = _context.sent;
-
-          if (order) {
-            _context.next = 28;
-            break;
-          }
-
-          _context.next = 27;
-          return regeneratorRuntime.awrap(sessionDB.abortTransaction());
-
-        case 27:
-          throw new Error('Transakce se nezdařila');
-
-        case 28:
-          _iteratorNormalCompletion = true;
-          _didIteratorError = false;
-          _iteratorError = undefined;
-          _context.prev = 31;
-          _iterator = order.donations[Symbol.iterator]();
-
-        case 33:
-          if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-            _context.next = 48;
-            break;
-          }
-
-          donationId = _step.value;
-          _context.next = 37;
-          return regeneratorRuntime.awrap(Donation.findByIdAndUpdate({
-            _id: donationId
-          }, {
-            $set: {
-              isPurchased: true
-            }
-          }));
-
-        case 37:
-          don = _context.sent;
-          _context.next = 40;
-          return regeneratorRuntime.awrap(Donatable.updateOne({
-            _id: don.donatableId
-          }, {
-            $inc: {
-              earnedMoney: don.price
-            }
-          }));
-
-        case 40:
-          donatable = _context.sent;
-
-          if (!(!don || !donatable)) {
-            _context.next = 45;
-            break;
-          }
-
-          _context.next = 44;
-          return regeneratorRuntime.awrap(sessionDB.abortTransaction());
-
-        case 44:
-          throw new Error('Transakce se nezdařila');
-
-        case 45:
-          _iteratorNormalCompletion = true;
-          _context.next = 33;
-          break;
-
-        case 48:
-          _context.next = 54;
-          break;
-
-        case 50:
-          _context.prev = 50;
-          _context.t1 = _context["catch"](31);
-          _didIteratorError = true;
-          _iteratorError = _context.t1;
-
-        case 54:
-          _context.prev = 54;
-          _context.prev = 55;
-
-          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-            _iterator["return"]();
-          }
-
-        case 57:
-          _context.prev = 57;
-
-          if (!_didIteratorError) {
-            _context.next = 60;
-            break;
-          }
-
-          throw _iteratorError;
-
-        case 60:
-          return _context.finish(57);
-
-        case 61:
-          return _context.finish(54);
-
-        case 62:
-          _context.next = 64;
-          return regeneratorRuntime.awrap(sessionDB.commitTransaction());
-
-        case 64:
-          sendEmail_OrderPurchasedAndBill(order.contact.email, {
-            orderId: order._id
-          });
-          _context.next = 72;
-          break;
-
-        case 67:
-          _context.prev = 67;
-          _context.t2 = _context["catch"](20);
-          _context.next = 71;
-          return regeneratorRuntime.awrap(sessionDB.abortTransaction());
-
-        case 71:
-          console.log(_context.t2);
-
-        case 72:
-          _context.prev = 72;
-          sessionDB.endSession();
-          return _context.finish(72);
-
-        case 75:
           response.status(200).end();
 
-        case 76:
+        case 13:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[3, 7], [20, 67, 72, 75], [31, 50, 54, 62], [55,, 57, 61]]);
+  }, null, null, [[3, 7]]);
 }); // Enabling access to body of requests
 
-app.use(bodyParser.json()); // app.use(express.json({
-//     limit: '5mb',
-//     verify: (req, res, buf) => {
-//       req.rawBody = buf.toString();
-//     }
-// }));
-
-app.use(function (req, res, next) {
-  console.log('Požadavek přijat');
-  next();
-}); // Adding routes to track
+app.use(bodyParser.json()); // Adding routes to track
 // app.use('/webhook', stripeRoutes)
 
 app.use('/api/auth', authRoutes);
@@ -309,6 +184,7 @@ mongoose.connect(MONGODB_URI, {
   // testPDFCreation()
   // sendTestEmail();
   // updateProjectDeletedFalse()
+  // updateDonatables_setEarnedZeroMoney()
 })["catch"](function (err) {
   return console.log(err);
 });

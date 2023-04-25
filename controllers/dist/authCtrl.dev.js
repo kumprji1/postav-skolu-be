@@ -23,82 +23,81 @@ exports.postLogin = function _callee(req, res, next) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          console.log("Přihlášení");
           errors = validationResult(req);
 
           if (errors.isEmpty()) {
-            _context.next = 4;
+            _context.next = 3;
             break;
           }
 
           return _context.abrupt("return", next(new HttpError(errors.errors[0].msg, 422)));
 
-        case 4:
+        case 3:
           // Finding user
           user = null;
-          _context.prev = 5;
-          _context.next = 8;
+          _context.prev = 4;
+          _context.next = 7;
           return regeneratorRuntime.awrap(User.findOne({
             email: req.body.email
           }).lean());
 
-        case 8:
+        case 7:
           user = _context.sent;
-          _context.next = 14;
+          _context.next = 13;
           break;
 
-        case 11:
-          _context.prev = 11;
-          _context.t0 = _context["catch"](5);
+        case 10:
+          _context.prev = 10;
+          _context.t0 = _context["catch"](4);
           return _context.abrupt("return", next(new HttpError("Nepodařilo se vyhledat v databázi", 500)));
 
-        case 14:
+        case 13:
           if (user) {
-            _context.next = 16;
+            _context.next = 15;
             break;
           }
 
           return _context.abrupt("return", next(new HttpError("Uživatel " + req.body.email + " neexistuje", 400)));
 
-        case 16:
+        case 15:
           if (!user) {
-            _context.next = 19;
+            _context.next = 18;
             break;
           }
 
           if (user.isLocallyCreated) {
-            _context.next = 19;
+            _context.next = 18;
             break;
           }
 
           return _context.abrupt("return", next(new HttpError("Uživatel není registrovaný lokálně. Přihlaste se přes služby třetích stran (Google) nebo zaregistrujte tento email tlačítekm registrovat níže.", 400)));
 
-        case 19:
+        case 18:
           // Comparing passwords
           isPasswordCorrect = false;
-          _context.prev = 20;
-          _context.next = 23;
+          _context.prev = 19;
+          _context.next = 22;
           return regeneratorRuntime.awrap(bcrypt.compare(req.body.password, user.password));
 
-        case 23:
+        case 22:
           isPasswordCorrect = _context.sent;
-          _context.next = 29;
+          _context.next = 28;
           break;
 
-        case 26:
-          _context.prev = 26;
-          _context.t1 = _context["catch"](20);
+        case 25:
+          _context.prev = 25;
+          _context.t1 = _context["catch"](19);
           return _context.abrupt("return", next(new HttpError("Cannot compare password", 500)));
 
-        case 29:
+        case 28:
           if (isPasswordCorrect) {
-            _context.next = 31;
+            _context.next = 30;
             break;
           }
 
           return _context.abrupt("return", next(new HttpError("Nesprávné heslo", 401)));
 
-        case 31:
+        case 30:
           // Generating token
           user.token = jwt.sign({
             userId: user._id,
@@ -106,17 +105,19 @@ exports.postLogin = function _callee(req, res, next) {
             name: user.name,
             surname: user.surname,
             role: user.role
-          }, "postav_skolu_2023_secret"); // Removing password before sending to client
+          }, process.env.JWT_SECRET, {
+            expiresIn: '1h'
+          }); // Removing password before sending to client
 
           user.password = null;
           res.json(user);
 
-        case 34:
+        case 33:
         case "end":
           return _context.stop();
       }
     }
-  }, null, null, [[5, 11], [20, 26]]);
+  }, null, null, [[4, 10], [19, 25]]);
 };
 
 exports.postLoginUser_Google = function _callee2(req, res, next) {
@@ -125,28 +126,27 @@ exports.postLoginUser_Google = function _callee2(req, res, next) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
-          console.log(req.body); // Finding Google user
-
+          // Finding Google user
           user = null;
-          _context2.prev = 2;
-          _context2.next = 5;
+          _context2.prev = 1;
+          _context2.next = 4;
           return regeneratorRuntime.awrap(User.findOne({
             email: req.body.email
           }).lean());
 
-        case 5:
+        case 4:
           user = _context2.sent;
-          _context2.next = 11;
+          _context2.next = 10;
           break;
 
-        case 8:
-          _context2.prev = 8;
-          _context2.t0 = _context2["catch"](2);
+        case 7:
+          _context2.prev = 7;
+          _context2.t0 = _context2["catch"](1);
           return _context2.abrupt("return", next(new HttpError("Nepodařilo se vyhledat v databázi", 500)));
 
-        case 11:
+        case 10:
           if (user) {
-            _context2.next = 24;
+            _context2.next = 23;
             break;
           }
 
@@ -160,20 +160,20 @@ exports.postLoginUser_Google = function _callee2(req, res, next) {
             isGoogleAssociated: true
           }); // Saving to the database
 
-          _context2.prev = 13;
-          _context2.next = 16;
+          _context2.prev = 12;
+          _context2.next = 15;
           return regeneratorRuntime.awrap(newGoogleUser.save());
 
-        case 16:
-          _context2.next = 21;
+        case 15:
+          _context2.next = 20;
           break;
 
-        case 18:
-          _context2.prev = 18;
-          _context2.t1 = _context2["catch"](13);
+        case 17:
+          _context2.prev = 17;
+          _context2.t1 = _context2["catch"](12);
           return _context2.abrupt("return", next(new HttpError("Nepodařilo se zaregistrovat Google účet", 500)));
 
-        case 21:
+        case 20:
           user = {
             name: newGoogleUser.name,
             surname: newGoogleUser.surname,
@@ -186,33 +186,35 @@ exports.postLoginUser_Google = function _callee2(req, res, next) {
             name: user.name,
             surname: user.surname,
             role: user.role
-          }, "postav_skolu_2023_secret");
+          }, process.env.JWT_SECRET, {
+            expiresIn: '1h'
+          });
           return _context2.abrupt("return", res.json(user));
 
-        case 24:
+        case 23:
           if (user.isGoogleAssociated) {
-            _context2.next = 33;
+            _context2.next = 32;
             break;
           }
 
-          _context2.prev = 25;
-          _context2.next = 28;
+          _context2.prev = 24;
+          _context2.next = 27;
           return regeneratorRuntime.awrap(User.findOneAndUpdate({
             email: user.email
           }, {
             isGoogleAssociated: true
           }));
 
-        case 28:
-          _context2.next = 33;
+        case 27:
+          _context2.next = 32;
           break;
 
-        case 30:
-          _context2.prev = 30;
-          _context2.t2 = _context2["catch"](25);
+        case 29:
+          _context2.prev = 29;
+          _context2.t2 = _context2["catch"](24);
           return _context2.abrupt("return", next(new HttpError("Nepodařilo se asociovat google účet", 500)));
 
-        case 33:
+        case 32:
           // Generating token
           user.token = jwt.sign({
             userId: user._id,
@@ -220,17 +222,19 @@ exports.postLoginUser_Google = function _callee2(req, res, next) {
             name: user.name,
             surname: user.surname,
             role: user.role
-          }, "postav_skolu_2023_secret"); // Removing password before sending to client
+          }, process.env.JWT_SECRET, {
+            expiresIn: '1h'
+          }); // Removing password before sending to client
 
           user.password = null;
           res.json(user);
 
-        case 36:
+        case 35:
         case "end":
           return _context2.stop();
       }
     }
-  }, null, null, [[2, 8], [13, 18], [25, 30]]);
+  }, null, null, [[1, 7], [12, 17], [24, 29]]);
 };
 
 exports.postRegisterAdmin = function _callee3(req, res, next) {
@@ -372,60 +376,56 @@ exports.postRegisterUser = function _callee4(req, res, next) {
           return _context4.abrupt("return", next(new HttpError("Cannot retrieve data from database", 500)));
 
         case 13:
-          console.log(userExists); // Username has to be unique
-
           if (!userExists) {
-            _context4.next = 17;
+            _context4.next = 16;
             break;
           }
 
           if (!userExists.isLocallyCreated) {
-            _context4.next = 17;
+            _context4.next = 16;
             break;
           }
 
           return _context4.abrupt("return", next(new HttpError("Uživatel " + req.body.email + " již existuje", 401)));
 
-        case 17:
+        case 16:
           if (!(req.body.password !== req.body.rePassword)) {
-            _context4.next = 19;
+            _context4.next = 18;
             break;
           }
 
           return _context4.abrupt("return", next(new HttpError("Hesla se neshodují", 401)));
 
-        case 19:
+        case 18:
           hashedPassword = ""; // Hashing password
 
-          _context4.prev = 20;
-          _context4.next = 23;
+          _context4.prev = 19;
+          _context4.next = 22;
           return regeneratorRuntime.awrap(bcrypt.hash(req.body.password, 12));
 
-        case 23:
+        case 22:
           hashedPassword = _context4.sent;
-          _context4.next = 29;
+          _context4.next = 28;
           break;
 
-        case 26:
-          _context4.prev = 26;
-          _context4.t1 = _context4["catch"](20);
+        case 25:
+          _context4.prev = 25;
+          _context4.t1 = _context4["catch"](19);
           return _context4.abrupt("return", next(new HttpError("Password hasn't been hashed", 500)));
 
-        case 29:
+        case 28:
           if (!userExists) {
-            _context4.next = 41;
+            _context4.next = 39;
             break;
           }
 
           if (!userExists.isGoogleAssociated) {
-            _context4.next = 41;
+            _context4.next = 39;
             break;
           }
 
-          console.log('Uživatel před google tu je, pojdmě jen aktualizovat data'); // Saving to the database
-
-          _context4.prev = 32;
-          _context4.next = 35;
+          _context4.prev = 30;
+          _context4.next = 33;
           return regeneratorRuntime.awrap(User.findOneAndUpdate({
             email: req.body.email
           }, {
@@ -435,21 +435,21 @@ exports.postRegisterUser = function _callee4(req, res, next) {
             isLocallyCreated: true
           }));
 
-        case 35:
-          _context4.next = 40;
+        case 33:
+          _context4.next = 38;
           break;
 
-        case 37:
-          _context4.prev = 37;
-          _context4.t2 = _context4["catch"](32);
+        case 35:
+          _context4.prev = 35;
+          _context4.t2 = _context4["catch"](30);
           return _context4.abrupt("return", next(new HttpError("Nepodařilo se uložit uživatele", 500)));
 
-        case 40:
+        case 38:
           return _context4.abrupt("return", res.json({
             msg: "Nový uživatel mezi námi!"
           }));
 
-        case 41:
+        case 39:
           newUser = new User({
             email: req.body.email,
             name: req.body.name,
@@ -460,28 +460,28 @@ exports.postRegisterUser = function _callee4(req, res, next) {
             isGoogleAssociated: false
           }); // Saving to the database
 
-          _context4.prev = 42;
-          _context4.next = 45;
+          _context4.prev = 40;
+          _context4.next = 43;
           return regeneratorRuntime.awrap(newUser.save());
 
-        case 45:
-          _context4.next = 50;
+        case 43:
+          _context4.next = 48;
           break;
 
-        case 47:
-          _context4.prev = 47;
-          _context4.t3 = _context4["catch"](42);
+        case 45:
+          _context4.prev = 45;
+          _context4.t3 = _context4["catch"](40);
           return _context4.abrupt("return", next(new HttpError("Nepodařilo se uložit uživatele", 500)));
 
-        case 50:
+        case 48:
           res.json({
             msg: "Nový uživatel mezi námi!"
           });
 
-        case 51:
+        case 49:
         case "end":
           return _context4.stop();
       }
     }
-  }, null, null, [[4, 10], [20, 26], [32, 37], [42, 47]]);
+  }, null, null, [[4, 10], [19, 25], [30, 35], [40, 45]]);
 };

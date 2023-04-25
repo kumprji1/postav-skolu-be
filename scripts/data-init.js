@@ -12262,3 +12262,8 @@ exports.createPayment = async () => {
 exports.updateProjectDeletedFalse = async () => {
  await Project.updateMany({}, {deleted: false})
 }
+
+exports.updateDonatables_setEarnedZeroMoney = async () => {
+  await Donatable.updateMany({}, {earnedMoney: 0})
+
+} 

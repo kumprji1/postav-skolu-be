@@ -4,12 +4,15 @@ const News = require("../models/News");
 
 const HttpError = require('../models/HttpError');
 
-// const { validationResult } = require("express-validator");
+const { validationResult } = require("express-validator");
 
 // const checkErrors = () => {};
 
 // Projects
 exports.postCreateProject = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return next(new HttpError(errors.errors[0].msg, 500));
+
   try {
     await new Project({
       title: req.body.title,
@@ -26,8 +29,8 @@ exports.postCreateProject = async (req, res, next) => {
 }
 
 exports.patchEditProject = async (req, res, next) => {
-//   const errors = validationResult(req);
-//   if (!errors.isEmpty()) return next(new HttpError(errors.errors[0].msg, 500));
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return next(new HttpError(errors.errors[0].msg, 500));
   try {
     const updatedProject = await Project.findByIdAndUpdate(req.params.projectId, {
       title: req.body.title,
@@ -55,6 +58,9 @@ exports.patchSetProjectDeleted = (req, res, next) => {
 
 // News
 exports.postCreateNews = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return next(new HttpError(errors.errors[0].msg, 500));
+
   try {
     // Check if project exists
     const projectExists = await Project.exists({urlTitle: req.params.urlTitle})
@@ -88,6 +94,9 @@ exports.patchSetNewsDeleted = (req, res, next) => {
 }
 
 exports.patchEditNews = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return next(new HttpError(errors.errors[0].msg, 500));
+
     try {
       const updatedNews = await News.findByIdAndUpdate(req.params.newsId, {
         title: req.body.title,
@@ -102,6 +111,9 @@ exports.patchEditNews = async (req, res, next) => {
 
 // Donatables 
 exports.postCreateDonatable = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return next(new HttpError(errors.errors[0].msg, 500));
+
   try {
     await new Donatable({
       title: req.body.title,
@@ -131,6 +143,9 @@ exports.patchSetDonatableDeleted = (req, res, next) => {
 }
 
 exports.patchEditDonatable = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return next(new HttpError(errors.errors[0].msg, 500));
+
   try {
     const updatedDonatable = await Donatable.findByIdAndUpdate(req.params.donatableId, {
       title: req.body.title,

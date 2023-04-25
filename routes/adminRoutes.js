@@ -19,12 +19,12 @@ router.patch('/project/delete/:projectId', adminCtrl.patchSetProjectDeleted)
 
 // News
 router.post('/create-news/:urlTitle', adminVlds.postAddOrEditNews, adminCtrl.postCreateNews)
-router.patch('/edit-news/:newsId', adminCtrl.patchEditNews)
+router.patch('/edit-news/:newsId', adminVlds.postAddOrEditNews, adminCtrl.patchEditNews)
 router.patch('/news/delete/:newsId', adminCtrl.patchSetNewsDeleted)
 
 // Donatables
-router.post('/create-donatable/:projectId', adminCtrl.postCreateDonatable)
-router.patch('/edit-donatable/:donatableId', adminCtrl.patchEditDonatable)
+router.post('/create-donatable/:projectId', adminVlds.createOrEditDonatable, adminCtrl.postCreateDonatable)
+router.patch('/edit-donatable/:donatableId', adminVlds.createOrEditDonatable, adminCtrl.patchEditDonatable)
 router.patch('/donatable/delete/:donatableId', adminCtrl.patchSetDonatableDeleted)
 
 // Donations 

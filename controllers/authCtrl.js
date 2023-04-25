@@ -10,7 +10,6 @@ const HttpError = require("../models/HttpError");
 const { Roles, AuthServices } = require("../utils/roles");
 
 exports.postLogin = async (req, res, next) => {
-  console.log("Přihlášení");
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -60,7 +59,8 @@ exports.postLogin = async (req, res, next) => {
       surname: user.surname,
       role: user.role,
     },
-    "postav_skolu_2023_secret"
+    process.env.JWT_SECRET,
+    { expiresIn: '1h' }
   );
 
   // Removing password before sending to client
@@ -70,7 +70,6 @@ exports.postLogin = async (req, res, next) => {
 };
 
 exports.postLoginUser_Google = async (req, res, next) => {
-  console.log(req.body);
 
   // Finding Google user
   let user = null;
@@ -117,7 +116,8 @@ exports.postLoginUser_Google = async (req, res, next) => {
         surname: user.surname,
         role: user.role,
       },
-      "postav_skolu_2023_secret"
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
     );
 
     return res.json(user);
@@ -144,7 +144,8 @@ exports.postLoginUser_Google = async (req, res, next) => {
       surname: user.surname,
       role: user.role,
     },
-    "postav_skolu_2023_secret"
+    process.env.JWT_SECRET,
+    { expiresIn: '1h' }
   );
 
   // Removing password before sending to client
@@ -217,7 +218,6 @@ exports.postRegisterUser = async (req, res, next) => {
   } catch (err) {
     return next(new HttpError("Cannot retrieve data from database", 500));
   }
-  console.log(userExists)
 
   // Username has to be unique
   if (userExists) {
@@ -244,7 +244,6 @@ exports.postRegisterUser = async (req, res, next) => {
   // If the user was created first by google login, only update some attributes
   if (userExists) {
     if (userExists.isGoogleAssociated) {
-      console.log('Uživatel před google tu je, pojdmě jen aktualizovat data')
       // Saving to the database
       try {
         await User.findOneAndUpdate(

@@ -6,12 +6,12 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var _require = require('uuid'),
+var _require = require("uuid"),
     uuidv4 = _require.v4;
 
 var mongoose = require("mongoose");
 
-var News = require('../models/News');
+var News = require("../models/News");
 
 var Donatable = require("../models/Donatable");
 
@@ -23,17 +23,18 @@ var Order = require("../models/Order");
 
 var Project = require("../models/Project");
 
-var HttpError = require('../models/HttpError');
+var HttpError = require("../models/HttpError");
 
-var _require2 = require('../utils/pdf_service'),
+var _require2 = require("../utils/pdf_service"),
     createBillPDF = _require2.createBillPDF;
 
-var _require3 = require('../utils/mail_service'),
-    sendEmail_OrderCreated = _require3.sendEmail_OrderCreated;
+var _require3 = require("../utils/mail_service"),
+    sendEmail_OrderCreated = _require3.sendEmail_OrderCreated,
+    sendEmail_OrderPurchasedAndBill = _require3.sendEmail_OrderPurchasedAndBill;
 
-require('dotenv').config();
+require("dotenv").config();
 
-var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+var stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 /**
  * Project
  */
@@ -77,9 +78,9 @@ exports.getProjectByTitle = function (req, res, next) {
   Project.findOne({
     urlTitle: urlTitle
   }).then(function (project) {
-    if (project) res.json(project);else return next(new HttpError('Nepodařilo se načíst projekt (nejspíše špatný url)', 500));
+    if (project) res.json(project);else return next(new HttpError("Nepodařilo se načíst projekt (nejspíše špatný url)", 500));
   })["catch"](function (err) {
-    return next(new HttpError('Nepodařilo se načíst projekt', 500));
+    return next(new HttpError("Nepodařilo se načíst projekt", 500));
   });
 };
 /**
@@ -95,7 +96,7 @@ exports.getNewsByProjectId = function (req, res, next) {
   }).then(function (news) {
     if (news) res.json(news);else res.json([]);
   })["catch"](function (err) {
-    return next(new HttpError('Nepodařilo se načíst aktuality', 500));
+    return next(new HttpError("Nepodařilo se načíst aktuality", 500));
   });
 };
 
@@ -106,10 +107,10 @@ exports.getNewsItem = function _callee2(req, res, next) {
       switch (_context2.prev = _context2.next) {
         case 0:
           newsId = req.params.newsId;
-          News.findById(newsId).populate('projectId').then(function (news) {
+          News.findById(newsId).populate("projectId").then(function (news) {
             res.json(news);
           })["catch"](function (err) {
-            return next(new HttpError('Nepodařilo se načíst aktualitu', 500));
+            return next(new HttpError("Nepodařilo se načíst aktualitu", 500));
           });
 
         case 2:
@@ -214,7 +215,7 @@ exports.getDonatableById = function _callee4(req, res, next) {
           Donatable.findById(donatableId).then(function (donatable) {
             res.json(donatable);
           })["catch"](function (err) {
-            return next(new HttpError('Nepodařilo se načíst aktualitu', 500));
+            return next(new HttpError("Nepodařilo se načíst aktualitu", 500));
           });
 
         case 2:
@@ -275,7 +276,7 @@ exports.getDonations = function _callee6(req, res, next) {
           _context6.next = 4;
           return regeneratorRuntime.awrap(Donation.find({
             isPurchased: true
-          }).populate('donatableId'));
+          }).populate("donatableId"));
 
         case 4:
           donations = _context6.sent;
@@ -303,7 +304,7 @@ exports.getDonations = function _callee6(req, res, next) {
 
 
 exports.postCreateOrder = function _callee7(req, res, next) {
-  var totalAmount, donationsIDs, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, donation, donName, newDonation, uuid, newOrder, session, contact, donations, orderId, sessionDB, order, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, donationId, don, donatable;
+  var totalAmount, donationsIDs, uuid, newOrder, sessionDB_don_order, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, donation, donName, newDonation, session, contact, donations, orderId, sessionDB, order, _iteratorNormalCompletion3, _didIteratorError3, _iteratorError3, _iterator3, _step3, donationId, don, donatable;
 
   return regeneratorRuntime.async(function _callee7$(_context7) {
     while (1) {
@@ -311,35 +312,41 @@ exports.postCreateOrder = function _callee7(req, res, next) {
         case 0:
           totalAmount = req.body.donations.reduce(function (partSum, i) {
             return partSum + i.price;
-          }, 0); // const orderData
-          // console.log(pieces);
+          }, 0);
+          donationsIDs = [];
+          uuid = uuidv4();
+          _context7.next = 5;
+          return regeneratorRuntime.awrap(mongoose.startSession());
 
-          donationsIDs = []; // Create Donations in DB
-
+        case 5:
+          sessionDB_don_order = _context7.sent;
+          sessionDB_don_order.startTransaction();
+          _context7.prev = 7;
+          // Create Donations in DB
           _iteratorNormalCompletion2 = true;
           _didIteratorError2 = false;
           _iteratorError2 = undefined;
-          _context7.prev = 5;
+          _context7.prev = 11;
           _iterator2 = req.body.donations[Symbol.iterator]();
 
-        case 7:
+        case 13:
           if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-            _context7.next = 18;
+            _context7.next = 28;
             break;
           }
 
           donation = _step2.value;
-          donName = '';
+          donName = "";
 
           if (donation.isAnonymous) {
-            donName = 'Anonym';
+            donName = "Anonym";
           } else if (req.body.buyingAsCompany) {
             donName = req.body.companyInfo.title;
           } else {
-            donName = req.body.contact.name + ' ' + req.body.contact.surname;
+            donName = req.body.contact.name + " " + req.body.contact.surname;
           }
 
-          _context7.next = 13;
+          _context7.next = 19;
           return regeneratorRuntime.awrap(new Donation({
             price: donation.price,
             donatableId: donation.donatableId,
@@ -350,52 +357,63 @@ exports.postCreateOrder = function _callee7(req, res, next) {
             name: donName
           }).save());
 
-        case 13:
+        case 19:
           newDonation = _context7.sent;
+
+          if (newDonation) {
+            _context7.next = 24;
+            break;
+          }
+
+          _context7.next = 23;
+          return regeneratorRuntime.awrap(sessionDB_don_order.abortTransaction());
+
+        case 23:
+          return _context7.abrupt("return", next(new HttpError("Transakce se nezdařila", 500)));
+
+        case 24:
           donationsIDs.push(newDonation._id);
 
-        case 15:
+        case 25:
           _iteratorNormalCompletion2 = true;
-          _context7.next = 7;
+          _context7.next = 13;
           break;
 
-        case 18:
-          _context7.next = 24;
+        case 28:
+          _context7.next = 34;
           break;
 
-        case 20:
-          _context7.prev = 20;
-          _context7.t0 = _context7["catch"](5);
+        case 30:
+          _context7.prev = 30;
+          _context7.t0 = _context7["catch"](11);
           _didIteratorError2 = true;
           _iteratorError2 = _context7.t0;
 
-        case 24:
-          _context7.prev = 24;
-          _context7.prev = 25;
+        case 34:
+          _context7.prev = 34;
+          _context7.prev = 35;
 
           if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
             _iterator2["return"]();
           }
 
-        case 27:
-          _context7.prev = 27;
+        case 37:
+          _context7.prev = 37;
 
           if (!_didIteratorError2) {
-            _context7.next = 30;
+            _context7.next = 40;
             break;
           }
 
           throw _iteratorError2;
 
-        case 30:
-          return _context7.finish(27);
+        case 40:
+          return _context7.finish(37);
 
-        case 31:
-          return _context7.finish(24);
+        case 41:
+          return _context7.finish(34);
 
-        case 32:
-          uuid = uuidv4();
-          console.log(req.body.companyInfo);
+        case 42:
           newOrder = new Order({
             contact: {
               name: req.body.contact.name,
@@ -424,49 +442,84 @@ exports.postCreateOrder = function _callee7(req, res, next) {
             isPurchased: false,
             createdAt: new Date()
           });
-          _context7.next = 37;
+          _context7.next = 45;
           return regeneratorRuntime.awrap(newOrder.save());
 
-        case 37:
-          _context7.next = 39;
+        case 45:
+          if (newOrder) {
+            _context7.next = 49;
+            break;
+          }
+
+          _context7.next = 48;
+          return regeneratorRuntime.awrap(sessionDB_don_order.abortTransaction());
+
+        case 48:
+          return _context7.abrupt("return", next(new HttpError("Transakce se nezdařila", 500)));
+
+        case 49:
+          _context7.next = 51;
+          return regeneratorRuntime.awrap(sessionDB_don_order.commitTransaction());
+
+        case 51:
+          _context7.next = 59;
+          break;
+
+        case 53:
+          _context7.prev = 53;
+          _context7.t1 = _context7["catch"](7);
+          _context7.next = 57;
+          return regeneratorRuntime.awrap(sessionDB_don_order.abortTransaction());
+
+        case 57:
+          console.log(_context7.t1);
+          return _context7.abrupt("return", next(new HttpError("Nepovedlo se vytvořit objednávku", 500)));
+
+        case 59:
+          _context7.prev = 59;
+          sessionDB_don_order.endSession();
+          return _context7.finish(59);
+
+        case 62:
+          _context7.next = 64;
           return regeneratorRuntime.awrap(stripe.checkout.sessions.create({
             line_items: [{
               price_data: {
-                currency: 'czk',
+                currency: "czk",
                 product_data: {
-                  name: 'Darovat'
+                  name: "Darovat"
                 },
                 unit_amount: totalAmount * 100,
-                tax_behavior: 'exclusive'
+                tax_behavior: "exclusive"
               },
               quantity: 1
             }],
-            mode: 'payment',
+            mode: "payment",
             success_url: "".concat(process.env.FRONTEND_URL, "/objednavka/").concat(newOrder._id, "?success=true&uuid=").concat(uuid),
             cancel_url: "".concat(process.env.FRONTEND_URL, "/objednavka/").concat(newOrder._id, "?canceled=true&uuid=").concat(uuid)
           }));
 
-        case 39:
+        case 64:
           session = _context7.sent;
-          _context7.prev = 40;
-          _context7.next = 43;
+          _context7.prev = 65;
+          _context7.next = 68;
           return regeneratorRuntime.awrap(newOrder.update({
             stripeUrl: session.url
           }));
 
-        case 43:
-          _context7.next = 48;
+        case 68:
+          _context7.next = 73;
           break;
 
-        case 45:
-          _context7.prev = 45;
-          _context7.t1 = _context7["catch"](40);
-          return _context7.abrupt("return", next(new HttpError('Nepodařilo se uložit URL stripu', 500)));
+        case 70:
+          _context7.prev = 70;
+          _context7.t2 = _context7["catch"](65);
+          return _context7.abrupt("return", next(new HttpError("Nepodařilo se uložit URL stripu", 500)));
 
-        case 48:
+        case 73:
           // Generate Bill (generování faktury)
           contact = {
-            name: req.body.buyingAsCompany ? req.body.companyInfo.title : req.body.contact.name + ' ' + req.body.contact.surname,
+            name: req.body.buyingAsCompany ? req.body.companyInfo.title : req.body.contact.name + " " + req.body.contact.surname,
             street_num: req.body.certificateInfo.street_num,
             city: req.body.certificateInfo.city,
             zipCode: req.body.certificateInfo.zipCode.toString(),
@@ -482,25 +535,27 @@ exports.postCreateOrder = function _callee7(req, res, next) {
           });
           createBillPDF(_objectSpread({}, contact, {
             donations: donations
-          }), newOrder._id.toString());
+          }), newOrder._id.toString()); // Zde bude vytvoření a zaslání certifikátu, pokud je vyžadován !!!
+
           sendEmail_OrderCreated(req.body.contact.email);
           res.json({
             sessionUrl: session.url,
-            message: 'Order created! ',
+            message: "Order created! ",
             orderId: newOrder._id
-          }); // lets PAYYY (HEROKU only
+          }); // HEROKU
           // Fulfill the purchase...
+          // Pro testovací účely je obednávka a její jednotlivé dary nastavené jako zaplacené, aniž by platba byla úspěšná.
 
           orderId = newOrder._id;
-          console.log('set this order and its donations as purchased: ', orderId);
-          _context7.next = 57;
+          console.log("set this order and its donations as purchased: ", orderId);
+          _context7.next = 82;
           return regeneratorRuntime.awrap(mongoose.startSession());
 
-        case 57:
+        case 82:
           sessionDB = _context7.sent;
           sessionDB.startTransaction();
-          _context7.prev = 59;
-          _context7.next = 62;
+          _context7.prev = 84;
+          _context7.next = 87;
           return regeneratorRuntime.awrap(Order.findOneAndUpdate({
             _id: orderId
           }, {
@@ -508,35 +563,35 @@ exports.postCreateOrder = function _callee7(req, res, next) {
             purchasedAt: new Date()
           }));
 
-        case 62:
+        case 87:
           order = _context7.sent;
 
           if (order) {
-            _context7.next = 67;
+            _context7.next = 92;
             break;
           }
 
-          _context7.next = 66;
+          _context7.next = 91;
           return regeneratorRuntime.awrap(sessionDB.abortTransaction());
 
-        case 66:
-          throw new Error('Transakce se nezdařila');
+        case 91:
+          return _context7.abrupt("return", next(new HttpError("Transakce se nezdařila", 500)));
 
-        case 67:
+        case 92:
           _iteratorNormalCompletion3 = true;
           _didIteratorError3 = false;
           _iteratorError3 = undefined;
-          _context7.prev = 70;
+          _context7.prev = 95;
           _iterator3 = order.donations[Symbol.iterator]();
 
-        case 72:
+        case 97:
           if (_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done) {
-            _context7.next = 87;
+            _context7.next = 112;
             break;
           }
 
           donationId = _step3.value;
-          _context7.next = 76;
+          _context7.next = 101;
           return regeneratorRuntime.awrap(Donation.findByIdAndUpdate({
             _id: donationId
           }, {
@@ -545,9 +600,9 @@ exports.postCreateOrder = function _callee7(req, res, next) {
             }
           }));
 
-        case 76:
+        case 101:
           don = _context7.sent;
-          _context7.next = 79;
+          _context7.next = 104;
           return regeneratorRuntime.awrap(Donatable.updateOne({
             _id: don.donatableId
           }, {
@@ -556,90 +611,87 @@ exports.postCreateOrder = function _callee7(req, res, next) {
             }
           }));
 
-        case 79:
+        case 104:
           donatable = _context7.sent;
 
           if (!(!don || !donatable)) {
-            _context7.next = 84;
+            _context7.next = 109;
             break;
           }
 
-          _context7.next = 83;
+          _context7.next = 108;
           return regeneratorRuntime.awrap(sessionDB.abortTransaction());
 
-        case 83:
-          throw new Error('Transakce se nezdařila');
+        case 108:
+          return _context7.abrupt("return", next(new HttpError("Transakce se nezdařila", 500)));
 
-        case 84:
+        case 109:
           _iteratorNormalCompletion3 = true;
-          _context7.next = 72;
+          _context7.next = 97;
           break;
 
-        case 87:
-          _context7.next = 93;
+        case 112:
+          _context7.next = 118;
           break;
 
-        case 89:
-          _context7.prev = 89;
-          _context7.t2 = _context7["catch"](70);
+        case 114:
+          _context7.prev = 114;
+          _context7.t3 = _context7["catch"](95);
           _didIteratorError3 = true;
-          _iteratorError3 = _context7.t2;
+          _iteratorError3 = _context7.t3;
 
-        case 93:
-          _context7.prev = 93;
-          _context7.prev = 94;
+        case 118:
+          _context7.prev = 118;
+          _context7.prev = 119;
 
           if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
             _iterator3["return"]();
           }
 
-        case 96:
-          _context7.prev = 96;
+        case 121:
+          _context7.prev = 121;
 
           if (!_didIteratorError3) {
-            _context7.next = 99;
+            _context7.next = 124;
             break;
           }
 
           throw _iteratorError3;
 
-        case 99:
-          return _context7.finish(96);
+        case 124:
+          return _context7.finish(121);
 
-        case 100:
-          return _context7.finish(93);
+        case 125:
+          return _context7.finish(118);
 
-        case 101:
-          _context7.next = 103;
+        case 126:
+          _context7.next = 128;
           return regeneratorRuntime.awrap(sessionDB.commitTransaction());
 
-        case 103:
-          sendEmail_OrderPurchasedAndBill(order.contact.email, {
-            orderId: order._id
-          });
-          _context7.next = 111;
+        case 128:
+          _context7.next = 135;
           break;
 
-        case 106:
-          _context7.prev = 106;
-          _context7.t3 = _context7["catch"](59);
-          _context7.next = 110;
+        case 130:
+          _context7.prev = 130;
+          _context7.t4 = _context7["catch"](84);
+          _context7.next = 134;
           return regeneratorRuntime.awrap(sessionDB.abortTransaction());
 
-        case 110:
-          console.log(_context7.t3);
+        case 134:
+          console.log(_context7.t4);
 
-        case 111:
-          _context7.prev = 111;
+        case 135:
+          _context7.prev = 135;
           sessionDB.endSession();
-          return _context7.finish(111);
+          return _context7.finish(135);
 
-        case 114:
+        case 138:
         case "end":
           return _context7.stop();
       }
     }
-  }, null, null, [[5, 20, 24, 32], [25,, 27, 31], [40, 45], [59, 106, 111, 114], [70, 89, 93, 101], [94,, 96, 100]]);
+  }, null, null, [[7, 53, 59, 62], [11, 30, 34, 42], [35,, 37, 41], [65, 70], [84, 130, 135, 138], [95, 114, 118, 126], [119,, 121, 125]]);
 };
 
 exports.getOrderByIdAndUUID = function _callee8(req, res, next) {
@@ -656,9 +708,9 @@ exports.getOrderByIdAndUUID = function _callee8(req, res, next) {
             _id: orderId,
             uuid: orderUUID
           }).populate({
-            path: 'donations',
+            path: "donations",
             populate: {
-              path: 'donatableId'
+              path: "donatableId"
             }
           }));
 
@@ -670,7 +722,7 @@ exports.getOrderByIdAndUUID = function _callee8(req, res, next) {
         case 8:
           _context8.prev = 8;
           _context8.t0 = _context8["catch"](2);
-          return _context8.abrupt("return", next(new HttpError('Nepodařilo se načíst objednávku', 500)));
+          return _context8.abrupt("return", next(new HttpError("Nepodařilo se načíst objednávku", 500)));
 
         case 11:
           if (order) {
@@ -678,7 +730,7 @@ exports.getOrderByIdAndUUID = function _callee8(req, res, next) {
             break;
           }
 
-          return _context8.abrupt("return", next(new HttpError('Nepodařilo se najít objednávku. Nejspíše nesprávna URL adresa.', 500)));
+          return _context8.abrupt("return", next(new HttpError("Nepodařilo se najít objednávku. Nejspíše nesprávna URL adresa.", 500)));
 
         case 13:
           // console.log(donations)

@@ -27,7 +27,7 @@ const Order = require('./models/Order');
 // Enabling .env variables
 require('dotenv').config();
 
-const { createProjects, createFewLandPiecesO3, createPayment, createDonatables, updateProjectDeletedFalse } = require('./scripts/data-init');
+const { createProjects, createFewLandPiecesO3, createPayment, createDonatables, updateProjectDeletedFalse, updateDonatables_setEarnedZeroMoney } = require('./scripts/data-init');
 const Donation = require('./models/Donation');
 const Donatable = require('./models/Donatable');
 const { testPDFCreation } = require('./utils/pdf_service');
@@ -86,37 +86,39 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (request,
     const session = event.data.object;
 
     // Fulfill the purchase...
-	const orderId = session.success_url.split('/')[4].split('?')[0].trim()
-	console.log('set this order and its donations as purchased: ', orderId)
+    // Pro testovací účely je objednávka nastavená jako zaplacená ihned po vytvoření, násleudjící zakomentovaný kód by se provedl při ostrém nasazení
 
-  const sessionDB = await mongoose.startSession()
-  sessionDB.startTransaction()
-  try {
-    const order = await Order.findOneAndUpdate({_id: orderId}, {isPurchased: true, purchasedAt: new Date()})
-    if (!order) {
-      await sessionDB.abortTransaction()
-      throw new Error('Transakce se nezdařila')
-    }
-    for (const donationId of order.donations) {
-      // If it's already bought
-      const don = await Donation.findByIdAndUpdate(
-        { _id: donationId },
-        { $set: { isPurchased: true } }
-      );
-      const donatable = await Donatable.updateOne({_id: don.donatableId}, { $inc: { earnedMoney: don.price } })
-      if (!don || ! donatable) {
-        await sessionDB.abortTransaction()
-        throw new Error('Transakce se nezdařila')
-      }
-    }
-    await sessionDB.commitTransaction()
-    sendEmail_OrderPurchasedAndBill(order.contact.email, {orderId: order._id})
-  } catch (error) {
-    await sessionDB.abortTransaction()
-    console.log(error)
-  } finally {
-    sessionDB.endSession()
-  }
+	// const orderId = session.success_url.split('/')[4].split('?')[0].trim()
+	// console.log('set this order and its donations as purchased: ', orderId)
+
+  // const sessionDB = await mongoose.startSession()
+  // sessionDB.startTransaction()
+  // try {
+  //   const order = await Order.findOneAndUpdate({_id: orderId}, {isPurchased: true, purchasedAt: new Date()})
+  //   if (!order) {
+  //     await sessionDB.abortTransaction()
+  //     throw new Error('Transakce se nezdařila')
+  //   }
+  //   for (const donationId of order.donations) {
+  //     // If it's already bought
+  //     const don = await Donation.findByIdAndUpdate(
+  //       { _id: donationId },
+  //       { $set: { isPurchased: true } }
+  //     );
+  //     const donatable = await Donatable.updateOne({_id: don.donatableId}, { $inc: { earnedMoney: don.price } })
+  //     if (!don || ! donatable) {
+  //       await sessionDB.abortTransaction()
+  //       throw new Error('Transakce se nezdařila')
+  //     }
+  //   }
+  //   await sessionDB.commitTransaction()
+  //   sendEmail_OrderPurchasedAndBill(order.contact.email, {orderId: order._id})
+  // } catch (error) {
+  //   await sessionDB.abortTransaction()
+  //   console.log(error)
+  // } finally {
+  //   sessionDB.endSession()
+  // }
   
   }
     response.status(200).end();
@@ -125,17 +127,6 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (request,
 
 // Enabling access to body of requests
 app.use(bodyParser.json());
-// app.use(express.json({
-//     limit: '5mb',
-//     verify: (req, res, buf) => {
-//       req.rawBody = buf.toString();
-//     }
-// }));
-
-app.use((req, res, next) => {
-    console.log('Požadavek přijat')
-    next();
-})
 
 // Adding routes to track
 // app.use('/webhook', stripeRoutes)
@@ -170,5 +161,6 @@ mongoose.connect(MONGODB_URI, {useNewUrlParser: true}).then(() => {
     // testPDFCreation()
     // sendTestEmail();
     // updateProjectDeletedFalse()
+    // updateDonatables_setEarnedZeroMoney()
 }).catch(err => console.log(err))
 

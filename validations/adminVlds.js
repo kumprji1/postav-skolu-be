@@ -23,6 +23,25 @@ exports.addOrEditProduct = [
     .withMessage("Množství musí být číslo"),
 ];
 
+exports.createOrEditDonatable = [
+  check("title").notEmpty().withMessage("Zadejte název projektu"),
+  check("desc").notEmpty().withMessage("Zadejte popis projektu"),
+  check("demandedMoney").notEmpty().withMessage("Zadejte vyžadované peníze"),
+  check("photo").notEmpty().withMessage("Zadejte URL obrázku"),
+  check("preparedPrices").notEmpty().withMessage("Zadejte předpřipravené ceny").custom((value) => {
+    const prices = value.split(',')
+    prices.forEach(price => {
+      priceNum = +price
+      if (price == 0) {
+        throw new Error('Některá z předpřipravených částek je nulová. Může to být způsobeno přebytečnou čárkou');
+      } else if (isNaN(priceNum)) {
+        throw new Error('Některá z předpřipravených částek není číslo');
+      }
+    });
+    return true
+})
+]
+
 exports.postAddOrEditNews = [
   check("title").notEmpty().withMessage("Zadejte název"),
   check("text").notEmpty().withMessage("Zadejte text"),

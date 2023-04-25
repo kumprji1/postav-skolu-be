@@ -9,7 +9,6 @@ exports.createBillPDF = (data, id) => {
     path.join(__dirname, "pdf_template.html"),
     "utf8"
   );
-  // console.log(html)
 
   let options = {
     format: "A4",

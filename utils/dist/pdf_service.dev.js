@@ -9,8 +9,7 @@ var path = require("path");
 
 exports.createBillPDF = function (data, id) {
   // Read HTML Template
-  var html = fs.readFileSync(path.join(__dirname, "pdf_template.html"), "utf8"); // console.log(html)
-
+  var html = fs.readFileSync(path.join(__dirname, "pdf_template.html"), "utf8");
   var options = {
     format: "A4",
     orientation: "portrait",

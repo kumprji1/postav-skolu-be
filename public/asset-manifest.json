@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.b03dfa07.css",
-    "main.js": "/static/js/main.9759f514.js",
+    "main.css": "/static/css/main.376617a1.css",
+    "main.js": "/static/js/main.02685272.js",
     "static/js/787.75f70528.chunk.js": "/static/js/787.75f70528.chunk.js",
     "static/media/about.png": "/static/media/about.835aa069e5e289856002.png",
     "static/media/pohoda.jpg": "/static/media/pohoda.87d547d62ff62ae356ad.jpg",
@@ -9,12 +9,12 @@
     "static/media/Diakonie_Logo_Cele.png": "/static/media/Diakonie_Logo_Cele.cb6abbc508952b6aa637.png",
     "static/media/remove-icon-png-7131.png": "/static/media/remove-icon-png-7131.5a486858c4bdc7a7b397.png",
     "index.html": "/index.html",
-    "main.b03dfa07.css.map": "/static/css/main.b03dfa07.css.map",
-    "main.9759f514.js.map": "/static/js/main.9759f514.js.map",
+    "main.376617a1.css.map": "/static/css/main.376617a1.css.map",
+    "main.02685272.js.map": "/static/js/main.02685272.js.map",
     "787.75f70528.chunk.js.map": "/static/js/787.75f70528.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.b03dfa07.css",
-    "static/js/main.9759f514.js"
+    "static/css/main.376617a1.css",
+    "static/js/main.02685272.js"
   ]
 }
