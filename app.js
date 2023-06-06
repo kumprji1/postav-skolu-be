@@ -3,6 +3,7 @@ const path = require('path')
 const express = require('express');
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser');
+const getRawBody = require('raw-body');
 
 // Routes
 const sharedRoutes = require('./routes/sharedRoutes')
@@ -65,9 +66,9 @@ app.use(express.static(path.join('public')))
 
 
 // Stripe Listener
-app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (request, response) => {
+app.post('/webhook', async (request, response) => {
     console.log('Objednávka zaplacena')
-    const payload = request.body;
+    const payload = await getRawBody(request);
     console.log('paylaod: ', payload)
     const sig = request.headers['stripe-signature'];
   
