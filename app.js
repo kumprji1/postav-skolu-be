@@ -64,11 +64,20 @@ app.use((req, res, next) => {
 // Enable static serving from public folder
 app.use(express.static(path.join('public')))
 
+// For Stripe Webhook
+app.use(bodyParser.json({
+  verify: function (req, res, buf) {
+      var url = req.originalUrl;
+      if (url.startsWith('/webhook')) {
+          req.rawBody = buf.toString()
+      }
+  }
+}));
 
 // Stripe Listener
 app.post('/webhook', async (request, response) => {
     console.log('Objednávka zaplacena')
-    const payload = await getRawBody(request);
+    const payload = req.rawBody;
     console.log('paylaod: ', payload)
     const sig = request.headers['stripe-signature'];
     console.log('signature: ', sig)
