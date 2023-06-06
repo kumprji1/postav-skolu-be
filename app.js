@@ -77,7 +77,7 @@ app.use(express.static(path.join('public')))
 // Stripe Listener
 app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (request, response) => {
     console.log('Objednávka zaplacena')
-    const payload = request.rawBody;
+    const payload = request.body;
     console.log('paylaod: ', payload)
     const sig = request.headers['stripe-signature'];
     console.log('signature: ', sig)
