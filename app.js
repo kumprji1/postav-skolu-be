@@ -38,7 +38,7 @@ const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSW
 const app = express();
 
 // Security conf
-app.use(helmet())
+// app.use(helmet())
 // let whitelist = ['http://localhost:3000', 'http://localhost:5000', 'https://postav-skolu.herokuapp.com/'];
 // var corsOptionsDelegate = function(req, callback){
 //   var corsOptions;
@@ -67,7 +67,7 @@ app.use(express.static(path.join('public')))
 app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (request, response) => {
     console.log('Objednávka zaplacena')
 
-    const payload = request.rawBody;
+    const payload = request.body;
     const sig = request.headers['stripe-signature'];
   
     let event;
