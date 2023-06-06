@@ -276,46 +276,46 @@ exports.postCreateOrder = async (req, res, next) => {
   // Fulfill the purchase...
   // Pro testovací účely je obednávka a její jednotlivé dary nastavené jako zaplacené, aniž by platba byla úspěšná.
 
-  const orderId = newOrder._id;
-  console.log("set this order and its donations as purchased: ", orderId);
+  // const orderId = newOrder._id;
+  // console.log("set this order and its donations as purchased: ", orderId);
 
-  const sessionDB = await mongoose.startSession();
-  sessionDB.startTransaction();
-  try {
-    const order = await Order.findOneAndUpdate(
-      { _id: orderId },
-      { isPurchased: true, purchasedAt: new Date() }
-    );
-    if (!order) {
-      await sessionDB.abortTransaction();
-      return next(new HttpError("Transakce se nezdařila", 500));
-    }
-    for (const donationId of order.donations) {
-      // If it's already bought
-      const don = await Donation.findByIdAndUpdate(
-        { _id: donationId },
-        { $set: { isPurchased: true } }
-      );
-      const donatable = await Donatable.updateOne(
-        { _id: don.donatableId },
-        { $inc: { earnedMoney: don.price } }
-      );
-      if (!don || !donatable) {
-        await sessionDB.abortTransaction();
-        return next(new HttpError("Transakce se nezdařila", 500));
-      }
-    }
-    await sessionDB.commitTransaction();
-    // Připravené zaslání emailu s fakturou
-    // sendEmail_OrderPurchasedAndBill(order.contact.email, {
-    //   orderId: order._id,
-    // });
-  } catch (error) {
-    await sessionDB.abortTransaction();
-    console.log(error);
-  } finally {
-    sessionDB.endSession();
-  }
+  // const sessionDB = await mongoose.startSession();
+  // sessionDB.startTransaction();
+  // try {
+  //   const order = await Order.findOneAndUpdate(
+  //     { _id: orderId },
+  //     { isPurchased: true, purchasedAt: new Date() }
+  //   );
+  //   if (!order) {
+  //     await sessionDB.abortTransaction();
+  //     return next(new HttpError("Transakce se nezdařila", 500));
+  //   }
+  //   for (const donationId of order.donations) {
+  //     // If it's already bought
+  //     const don = await Donation.findByIdAndUpdate(
+  //       { _id: donationId },
+  //       { $set: { isPurchased: true } }
+  //     );
+  //     const donatable = await Donatable.updateOne(
+  //       { _id: don.donatableId },
+  //       { $inc: { earnedMoney: don.price } }
+  //     );
+  //     if (!don || !donatable) {
+  //       await sessionDB.abortTransaction();
+  //       return next(new HttpError("Transakce se nezdařila", 500));
+  //     }
+  //   }
+  //   await sessionDB.commitTransaction();
+  //   // Připravené zaslání emailu s fakturou
+  //   // sendEmail_OrderPurchasedAndBill(order.contact.email, {
+  //   //   orderId: order._id,
+  //   // });
+  // } catch (error) {
+  //   await sessionDB.abortTransaction();
+  //   console.log(error);
+  // } finally {
+  //   sessionDB.endSession();
+  // }
 };
 
 exports.getOrderByIdAndUUID = async (req, res, next) => {

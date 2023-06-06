@@ -38,7 +38,7 @@ const MONGODB_URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSW
 const app = express();
 
 // Security conf
-// app.use(helmet())
+app.use(helmet())
 // let whitelist = ['http://localhost:3000', 'http://localhost:5000', 'https://postav-skolu.herokuapp.com/'];
 // var corsOptionsDelegate = function(req, callback){
 //   var corsOptions;
@@ -88,37 +88,37 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (request,
     // Fulfill the purchase...
     // Pro testovací účely je objednávka nastavená jako zaplacená ihned po vytvoření, násleudjící zakomentovaný kód by se provedl při ostrém nasazení
 
-	// const orderId = session.success_url.split('/')[4].split('?')[0].trim()
-	// console.log('set this order and its donations as purchased: ', orderId)
+	const orderId = session.success_url.split('/')[4].split('?')[0].trim()
+	console.log('set this order and its donations as purchased: ', orderId)
 
-  // const sessionDB = await mongoose.startSession()
-  // sessionDB.startTransaction()
-  // try {
-  //   const order = await Order.findOneAndUpdate({_id: orderId}, {isPurchased: true, purchasedAt: new Date()})
-  //   if (!order) {
-  //     await sessionDB.abortTransaction()
-  //     throw new Error('Transakce se nezdařila')
-  //   }
-  //   for (const donationId of order.donations) {
-  //     // If it's already bought
-  //     const don = await Donation.findByIdAndUpdate(
-  //       { _id: donationId },
-  //       { $set: { isPurchased: true } }
-  //     );
-  //     const donatable = await Donatable.updateOne({_id: don.donatableId}, { $inc: { earnedMoney: don.price } })
-  //     if (!don || ! donatable) {
-  //       await sessionDB.abortTransaction()
-  //       throw new Error('Transakce se nezdařila')
-  //     }
-  //   }
-  //   await sessionDB.commitTransaction()
-  //   sendEmail_OrderPurchasedAndBill(order.contact.email, {orderId: order._id})
-  // } catch (error) {
-  //   await sessionDB.abortTransaction()
-  //   console.log(error)
-  // } finally {
-  //   sessionDB.endSession()
-  // }
+  const sessionDB = await mongoose.startSession()
+  sessionDB.startTransaction()
+  try {
+    const order = await Order.findOneAndUpdate({_id: orderId}, {isPurchased: true, purchasedAt: new Date()})
+    if (!order) {
+      await sessionDB.abortTransaction()
+      throw new Error('Transakce se nezdařila')
+    }
+    for (const donationId of order.donations) {
+      // If it's already bought
+      const don = await Donation.findByIdAndUpdate(
+        { _id: donationId },
+        { $set: { isPurchased: true } }
+      );
+      const donatable = await Donatable.updateOne({_id: don.donatableId}, { $inc: { earnedMoney: don.price } })
+      if (!don || ! donatable) {
+        await sessionDB.abortTransaction()
+        throw new Error('Transakce se nezdařila')
+      }
+    }
+    await sessionDB.commitTransaction()
+    sendEmail_OrderPurchasedAndBill(order.contact.email, {orderId: order._id})
+  } catch (error) {
+    await sessionDB.abortTransaction()
+    console.log(error)
+  } finally {
+    sessionDB.endSession()
+  }
   
   }
     response.status(200).end();
