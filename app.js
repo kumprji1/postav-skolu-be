@@ -71,6 +71,7 @@ app.post('/webhook', async (request, response) => {
     const payload = await getRawBody(request);
     console.log('paylaod: ', payload)
     const sig = request.headers['stripe-signature'];
+    console.log('signature: ', sig)
   
     let event;
   
