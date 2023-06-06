@@ -62,6 +62,7 @@ exports.createBillPDF = (data, id) => {
   pdf
     .create(document, options)
     .then((res) => {
+      console.log('Generování souboru faktury proběhlo v pořádku')
       console.log(res);
     })
     .catch((error) => {
