@@ -77,7 +77,7 @@ app.use(bodyParser.json({
 // Stripe Listener
 app.post('/webhook', async (request, response) => {
     console.log('Objednávka zaplacena')
-    const payload = req.rawBody;
+    const payload = request.rawBody;
     console.log('paylaod: ', payload)
     const sig = request.headers['stripe-signature'];
     console.log('signature: ', sig)
