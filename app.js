@@ -65,17 +65,17 @@ app.use((req, res, next) => {
 app.use(express.static(path.join('public')))
 
 // For Stripe Webhook
-app.use(bodyParser.json({
-  verify: function (req, res, buf) {
-      var url = req.originalUrl;
-      if (url.startsWith('/webhook')) {
-          req.rawBody = buf.toString()
-      }
-  }
-}));
+// app.use(bodyParser.json({
+//   verify: function (req, res, buf) {
+//       var url = req.originalUrl;
+//       if (url.startsWith('/webhook')) {
+//           req.rawBody = buf.toString()
+//       }
+//   }
+// }));
 
 // Stripe Listener
-app.post('/webhook', async (request, response) => {
+app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (request, response) => {
     console.log('Objednávka zaplacena')
     const payload = request.rawBody;
     console.log('paylaod: ', payload)

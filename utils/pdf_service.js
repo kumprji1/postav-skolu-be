@@ -65,6 +65,7 @@ exports.createBillPDF = (data, id) => {
       console.log(res);
     })
     .catch((error) => {
+      console.log('Chyba při generování souboru faktury')
       console.error(error);
     });
 };
