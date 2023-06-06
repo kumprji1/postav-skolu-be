@@ -67,7 +67,7 @@ app.use(express.static(path.join('public')))
 app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (request, response) => {
     console.log('Objednávka zaplacena')
 
-    const payload = request.body;
+    const payload = request.rawBody;
     const sig = request.headers['stripe-signature'];
   
     let event;
