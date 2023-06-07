@@ -1,3 +1,4 @@
+const path = require('path')
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 let transporter = nodemailer.createTransport({
@@ -68,7 +69,7 @@ exports.sendEmail_OrderPurchasedAndBill = (to, data) => {
     text: `Děkujeme za zaplacení objednávky. V příloze je zaslána faktura`,
     attachments: [
       {   // filename and content type is derived from path
-          path: `./pdf/outputs/faktura_postavskolu_${data.orderId}.pdf`
+          path: path.join(__dirname,`../pdf/outputs/faktura_postavskolu_${data.orderId}.pdf`)
       },
     ]
   };

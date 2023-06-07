@@ -3,6 +3,8 @@ const pdf = require("pdf-creator-node");
 const fs = require("fs");
 const path = require("path");
 
+
+
 exports.createBillPDF = (data, id) => {
   // Read HTML Template
   const html = fs.readFileSync(
@@ -11,6 +13,11 @@ exports.createBillPDF = (data, id) => {
   );
 
   let options = {
+    childProcessOptions: {
+      env: {
+        OPENSSL_CONF: '/dev/null',
+      },
+    },
     format: "A4",
     orientation: "portrait",
     border: "10mm",
@@ -55,7 +62,7 @@ exports.createBillPDF = (data, id) => {
   let document = {
     html: html,
     data: data,
-    path: `./pdf/outputs/faktura_postavskolu_${id}.pdf`,
+    path: path.join(__dirname, `../pdf/outputs/faktura_postavskolu_${id}.pdf`),
     type: "",
   };
 
