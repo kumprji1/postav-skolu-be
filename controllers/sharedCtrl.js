@@ -139,6 +139,7 @@ exports.postCreateOrder = async (req, res, next) => {
     (partSum, i) => partSum + i.price,
     0
   );
+  if (totalAmount < 16) return next(new HttpError('Nejnižší darovaná částka je 15 KČ. Darujte prosím validní částku. :)', 500))
 
   const donationsIDs = [];
   const uuid = uuidv4();
@@ -217,6 +218,9 @@ exports.postCreateOrder = async (req, res, next) => {
   } finally {
     sessionDB_don_order.endSession();
   }
+
+  console.log(req.body)
+  // return res.json({"msg": "done", body: req.body}).status(200)
 
   // Stripe
   const session = await stripe.checkout.sessions.create({
