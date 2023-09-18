@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.ea173ea2.css",
-    "main.js": "/static/js/main.051adad8.js",
+    "main.js": "/static/js/main.8139d152.js",
     "static/js/787.75f70528.chunk.js": "/static/js/787.75f70528.chunk.js",
     "static/media/skola_laplan.png": "/static/media/skola_laplan.b6f4999c5149347d7903.png",
     "static/media/pohoda.jpg": "/static/media/pohoda.87d547d62ff62ae356ad.jpg",
@@ -10,11 +10,11 @@
     "static/media/remove-icon-png-7131.png": "/static/media/remove-icon-png-7131.5a486858c4bdc7a7b397.png",
     "index.html": "/index.html",
     "main.ea173ea2.css.map": "/static/css/main.ea173ea2.css.map",
-    "main.051adad8.js.map": "/static/js/main.051adad8.js.map",
+    "main.8139d152.js.map": "/static/js/main.8139d152.js.map",
     "787.75f70528.chunk.js.map": "/static/js/787.75f70528.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.ea173ea2.css",
-    "static/js/main.051adad8.js"
+    "static/js/main.8139d152.js"
   ]
 }
